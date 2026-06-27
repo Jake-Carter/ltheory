@@ -5,7 +5,6 @@
 #include math
 
 #autovar samplerCube irMap
-#autovar samplerCube envMap
 #autovar vec3 eye
 
 varying vec3 worldOrigin;

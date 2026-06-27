@@ -3,8 +3,6 @@
 #include math
 #include pbr
 
-#autovar vec3 eye
-
 varying vec3 worldOrigin;
 varying vec3 worldDir;
 

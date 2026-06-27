@@ -6,8 +6,6 @@
 #include math
 #include fog
 
-#autovar samplerCube irMap
-#autovar samplerCube envMap
 #autovar vec3 eye
 
 uniform float scale;
@@ -72,7 +70,6 @@ void main() {
 
   vec3 c = diff;
   c *= 3.0 * radians(360.0);
-  c *= uv.x;
 
   FRAGMENT_CORRECT_DEPTH;
 

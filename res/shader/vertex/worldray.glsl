@@ -1,7 +1,5 @@
 #include vertex
 
-#autovar mat4 mView
-#autovar mat4 mProj
 #autovar mat4 mViewInv
 #autovar mat4 mProjInv
 

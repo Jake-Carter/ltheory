@@ -5,7 +5,6 @@
 #include fog
 
 #autovar samplerCube envMap
-#autovar samplerCube irMap
 
 void main() {
   vec3 V = normalize(vertPos);
