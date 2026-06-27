@@ -183,6 +183,8 @@ Windows x64 builds pull and compile dependencies automatically (`libphx/cmake/De
 
 Audio uses the **SDL3 backend** (`PHX_AUDIO_SDL3=1`): WAV via `SDL_LoadWAV`, MP3 via minimp3. FMOD is optional (`PHX_ENABLE_FMOD=ON`) but off by default.
 
+`AudioTest` verifies playback without listening: it asserts `Audio.GetLastMixPeak()` exceeds a threshold while sounds play, and checks `Sound:getPlayPos()` advances. `Audio.Set3DSettings(doppler, minDistance, rolloff)` uses **minDistance** as full-volume range for 3D attenuation.
+
 Legacy headers under `libphx/ext/include/` (old SDL2, GLEW, FMOD, etc.) remain for reference; the active build uses fetched SDL3/FreeType/Bullet headers.
 
 ### Windows runtime DLLs in `bin/`
@@ -257,7 +259,7 @@ After building, from the repo root (pass `--frames N` for scripted auto-exit):
 
 ```bash
 bin/lt64.exe InputTest              # window + input loop (default in Config.App.lua)
-bin/lt64.exe AudioTest              # SDL3 audio + 3D listener
+bin/lt64.exe AudioTest --frames 90   # SDL3 decode + 2D/3D playback; verifies mix peak programmatically
 bin/lt64.exe PhysicsAttachTest --frames 60
 bin/lt64.exe ProcGenTest --frames 120
 bin/lt64.exe PhysicsTest --frames 120

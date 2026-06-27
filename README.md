@@ -87,7 +87,7 @@ Or run directly:
 ```bash
 bin/lt64.exe                  # default app (InputTest; see Config.App.lua)
 bin/lt64.exe InputTest        # input / window smoke test
-bin/lt64.exe AudioTest        # SDL3 audio smoke test
+bin/lt64.exe AudioTest --frames 90  # SDL3 audio; verifies mix peak programmatically
 bin/lt64.exe PhysicsAttachTest --frames 60
 bin/lt64.exe PhysicsTest --frames 120
 bin/lt64.exe FontTest --frames 120

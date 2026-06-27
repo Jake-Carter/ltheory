@@ -19,7 +19,7 @@ bin/lt64.exe PhysicsTest      # specific app
 | `BSPTest.lua` | BSP spatial query test |
 | `CoordTest.lua` | Coordinate system test |
 | `InputTest.lua` | Input device test |
-| `FMODTest.lua` | Audio test |
+| `AudioTest.lua` | SDL3 audio smoke test (decode, 2D/3D playback, mix peak verification) |
 | `GenTex2D.lua` | Texture generation test |
 | `TestIcon.lua` | Icon rendering test |
 | `TestStrMap.lua` | String map test |
