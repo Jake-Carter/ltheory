@@ -13,6 +13,10 @@ Env.Call(function ()
   dofile('./script/Config.App.lua')
   if io.exists ('./script/Config.Local.lua') then dofile('./script/Config.Local.lua') end
 
+  if __max_frames__ then
+    Config.run.maxFrames = __max_frames__
+  end
+
   local app = __app__ or Config.app or 'InputTest'
 
   Namespace.LoadInline('Util')

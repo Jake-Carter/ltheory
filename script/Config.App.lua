@@ -1,5 +1,12 @@
 Config.app = 'InputTest'
 
+Config.run = {
+  maxFrames = nil, -- auto-exit after N frames; override via CLI: lt64.exe AppName --frames 60
+  minimalAttach = false, -- true: two-box FFI attach only (no ship proc-gen)
+  singleAsteroid = false, -- true: one asteroid in system, no compound attach
+  skipAttach = false,   -- skip final asteroid attach in full/system mode
+}
+
 Config.debug = {
   metrics         = true,
   window          = true, -- Debug window visible by default at launch?

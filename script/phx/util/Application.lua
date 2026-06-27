@@ -40,6 +40,8 @@ function Application:run ()
     self:getWindowMode())
 
   self.exit = false
+  self.frameCount = 0
+  self.maxFrames = nil
   self.window:setVsync(Config.render.vsync)
 
   if Config.jit.profile and Config.jit.profileInit then Jit.StartProfile() end
@@ -48,6 +50,9 @@ function Application:run ()
 
   Input.LoadGamepadDatabase('gamecontrollerdb_205.txt');
   self:onInit()
+  if self.maxFrames == nil and Config.run and Config.run.maxFrames then
+    self.maxFrames = Config.run.maxFrames
+  end
   self:onResize(self.resX, self.resY)
 
   local font = Font.Load('Share', 10)
@@ -188,6 +193,11 @@ function Application:run ()
     end
     Profiler.End()
     Profiler.LoopMarker()
+
+    self.frameCount = self.frameCount + 1
+    if self.maxFrames and self.frameCount >= self.maxFrames then
+      self:quit()
+    end
   end
 
   if profiling then Profiler.Disable() end
