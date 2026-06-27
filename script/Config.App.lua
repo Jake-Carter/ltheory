@@ -122,16 +122,24 @@ Config.ui.color = {
 }
 
 Config.ui.font = setmetatable({
-  normalSize = 14,
-  titleSize  = 10,
+  normalFamily = 'Share',
+  titleFamily  = 'Share', -- Exo2Bold.ttf was an LFS/HTML placeholder; use Share until real face is bundled
+  monoFamily   = 'Share', -- NovaMono.ttf was an LFS/HTML placeholder; use Share until real face is bundled
+  normalSize   = 14,
+  titleSize    = 10,
+  hudSize      = 16,
 }, {
   __index = function (self, key)
     if key == 'normal' then
-      local font = Cache.Font('Share', self.normalSize)
+      local font = Cache.Font(self.normalFamily, self.normalSize)
       rawset(self, key, font)
       return font
     elseif key == 'title' then
-      local font = Cache.Font('Exo2Bold', self.titleSize)
+      local font = Cache.Font(self.titleFamily, self.titleSize)
+      rawset(self, key, font)
+      return font
+    elseif key == 'mono' then
+      local font = Cache.Font(self.monoFamily, self.hudSize)
       rawset(self, key, font)
       return font
     end

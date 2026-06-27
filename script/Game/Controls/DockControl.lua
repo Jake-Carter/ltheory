@@ -31,9 +31,9 @@ function DockControl:onDraw (focus, active)
   -- TODO : Unify this with HUD
   local x, y, sx, sy = self:getRectGlobal()
   UI.DrawEx.TextAdditive(
-    'NovaMono',
+    Config.ui.font.monoFamily,
     'Press ??? to Undock',
-    16,
+    Config.ui.font.hudSize,
     x, y, sx, sy,
     1, 1, 1, 1,
     0.5, 0.99

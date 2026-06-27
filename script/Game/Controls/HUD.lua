@@ -160,9 +160,9 @@ end
 function HUD:drawDockPrompt (a)
   local x, y, sx, sy = self:getRectGlobal()
   UI.DrawEx.TextAdditive(
-    'NovaMono',
+    Config.ui.font.monoFamily,
     'Press ??? to Dock',
-    16,
+    Config.ui.font.hudSize,
     x, y, sx, sy,
     1, 1, 1, self.dockPromptAlpha * a,
     0.5, 0.99
