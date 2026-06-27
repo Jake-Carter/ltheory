@@ -33,7 +33,7 @@ local goodSeeds = {
 }
 
 Config.gen = {
-  buildShipBSP = false, -- set true once BSP_Create is stable on proc-gen meshes
+  buildShipBSP = true,  -- ProcGenTest validates BSP_Create on fixed-seed ship meshes
   skipMeshAO   = false, -- mesh AO in Shape:finalize (ProcGenTest validates this path)
   seedGlobal = nil, -- Set to force deterministic global RNG
   seedSystem = nil, -- Set to force deterministic system generation
@@ -44,8 +44,8 @@ Config.gen = {
   nStations  = 1,
   nNPCs      = 0,
   nNPCsNew   = 0,
-  nPlanets   = 0,
-  nBeltSize  = function (rng) return 0 end, -- Asteroids per planetary belt; raise for full gate
+  nPlanets   = 1,
+  nBeltSize  = function (rng) return 5 end, -- small belt for composition gate
   nThrusters = 1,
   nTurrets   = 2,
 

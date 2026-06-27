@@ -48,10 +48,15 @@ function ProcGenTest:onInit ()
   printf('ProcGenTest: mesh ok — %d verts, %d indices, radius=%.3f center=(%.2f, %.2f, %.2f)',
     vc, ic, radius, center.x, center.y, center.z)
 
-  if buildBSP and shipType.bsp then
-    printf('ProcGenTest: BSP ok (buildShipBSP=true)')
-  elseif buildBSP then
-    printf('ProcGenTest: WARNING — buildShipBSP requested but no BSP on ShipType')
+  if buildBSP then
+    if shipType.bsp then
+      printf('ProcGenTest: BSP ok (buildShipBSP=true)')
+      if #shipType.sockets[MountType.Turret] == 0 and #shipType.sockets[MountType.Thruster] == 0 then
+        error('ProcGenTest: BSP built but FindMountPoint returned no sockets')
+      end
+    else
+      error('ProcGenTest: buildShipBSP requested but BSP.Create returned nil')
+    end
   else
     printf('ProcGenTest: BSP skipped (set Config.run.procGenBuildBSP=true to test)')
   end

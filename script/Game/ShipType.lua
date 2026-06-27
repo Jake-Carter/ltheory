@@ -11,9 +11,10 @@ local ShipType = class(function (self, seed, generator, scale)
   local rng = RNG.Create(seed)
   self.seed = seed
   self.mesh = generator(seed, Config.gen.shipRes):managed()
-  -- TODO: BSP_Create heap-corrupts on some procedural ship meshes; re-enable after fix
+  -- TODO: BSP_Create was disabled during refresh due to heap corruption on some meshes; re-gated via ProcGenTest
   if Config.gen.buildShipBSP then
-    self.bsp = BSP.Create(self.mesh):managed()
+    local bsp = BSP.Create(self.mesh)
+    if bsp then self.bsp = bsp:managed() end
   end
   self.scale = scale
 
