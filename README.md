@@ -10,68 +10,96 @@ This repository is the game (not engine) code for the second generation of LT's 
 
 To build Limit Theory, you'll need a few standard developer tools. All of them are available to download for free.
 
-- Python: https://www.python.org/downloads/
 - Git: https://git-scm.com/downloads
 - Git LFS: https://git-lfs.github.com/
-- Visual Studio Community: https://visualstudio.microsoft.com/vs/
-- CMake: https://cmake.org/download/
+- Visual Studio Community: https://visualstudio.microsoft.com/vs/ (with "Desktop development with C++")
+- CMake 3.21+: https://cmake.org/download/
 
 # Building
 
-With the above prerequisites installed, open a **Git Bash terminal**.
-
 ## Checking out the Repository
 
-First, use `cd` to change directories to the place where you want to download LT.
-- `cd ~/Desktop/<path where you want to put the LT source>`
-
 Before doing any other `git` commands, make sure LFS is installed:
-- `git lfs install`
 
-You should see `Git LFS initialized` or a similar message. **Important**: if you forget to install and initialize Git LFS, most of the resources will probably be broken, and the whole process will likely fail in strange and mysterious ways. This is a common gotcha with projects that use LFS. Make sure you do the above step!
+```bash
+git lfs install
+```
 
-Now, you can download the repository:
+**Important**: if you forget to install and initialize Git LFS, most of the resources will probably be broken. Make sure you do the above step!
 
-- `git clone --recursive https://github.com/JoshParnell/ltheory.git ltheory`
+Clone with submodules (LibPHX engine):
+
+```bash
+git clone --recursive https://github.com/JoshParnell/ltheory.git ltheory
+cd ltheory
+```
 
 ## Compiling
 
-Once you have the repository, the build process proceeds in two steps (as with other CMake builds): generating the build files, and then building. There is a Python script `configure.py` at the top level of the repository to help you do this easily.
+From the repository root:
 
-From a terminal in the directory of the checked-out repository, run
+```bash
+cmake -S . -B build -A x64
+cmake --build build --config RelWithDebInfo
+```
 
-- `python configure.py`
+This produces `bin/lt64.exe` and `bin/libphx64.dll`.
 
-This runs CMake to generate the build files. Then, to compile,
+Visual Studio is a multi-config generator, so pass `--config RelWithDebInfo` when building. If you open `build/LTheory.sln` in the IDE instead, select the **RelWithDebInfo** configuration there.
 
-- `python configure.py build`
+### Debug build
 
-## Running a Lua App
+```bash
+cmake --build build --config Debug
+```
 
-If the compilation is successful, you now have `bin/lt64.exe`, which is the main executable. This program launches a Lua script. The intention was for Limit Theory (and all mods) to be broken into many Lua scripts, which would then implement the gameplay, using script functions exposed by the underlying engine.
+Debug output is `bin/lt64d.exe` and `bin/libphx64d.dll`.
 
-To launch a Lua script, you can again use the python helper:
+### Ninja (optional)
 
-- `python configure.py run`
+From a Visual Studio developer shell:
 
-To run the default script ('LTheory'), or
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake --build build
+```
 
-- `python configure.py run <script_name_without_extension>`
+Ninja is single-config, so `--config` is not needed.
 
-to run a specific script. All top-level scripts are in the `script/App` directory.
+### Clean rebuild
+
+```bash
+rm -rf build bin
+cmake -S . -B build -A x64
+cmake --build build --config RelWithDebInfo
+```
+
+## Running
+
+The main executable launches a Lua script. Gameplay lives entirely in `script/`; the C++ layer is just the engine host.
+
+```bash
+cmake --build build --target run --config RelWithDebInfo
+```
+
+Or run directly:
+
+```bash
+bin/lt64.exe                  # default app (LTheory)
+bin/lt64.exe PhysicsTest      # a specific script/App/*.lua
+```
+
+All top-level apps are in `script/App/`.
 
 # Example of the Entire Process
 
-An example of the entire sequence of commands to run LT, starting from nothing (but having the prerequisites installed):
-
-Open Git Bash. Each line below is one command, some of which will take a while to complete:
-
-```
-cd ~/Desktop
+```bash
 git lfs install
 git clone --recursive https://github.com/JoshParnell/ltheory.git ltheory
 cd ltheory
-python configure.py
-python configure.py build
-python configure.py run
+cmake -S . -B build -A x64
+cmake --build build --config RelWithDebInfo
+cmake --build build --target run --config RelWithDebInfo
 ```
+
+For more detail on the build system, output naming, and dependencies, see [docs/build-and-maintenance.md](docs/build-and-maintenance.md).
