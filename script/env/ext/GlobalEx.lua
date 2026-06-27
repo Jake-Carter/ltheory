@@ -4,6 +4,17 @@ if __embedded__   == nil then __embedded__   = false end
 
 ffi = require('ffi')
 jit = require('jit')
+
+do
+  local open
+  for _, path in ipairs({ 'lfs', './bin/lfs.dll', './bin/lfs_RelWithDebugInfo.dll' }) do
+    open = package.loadlib(path, 'luaopen_lfs')
+    if open then break end
+  end
+  if not open then error('Failed to load LuaFileSystem (lfs.dll)') end
+  lfs = open()
+end
+
 for k, v in pairs(math) do
   if type(v) == 'function' then
     _G[k] = v
