@@ -1,6 +1,8 @@
 if __debug__      == nil then __debug__      = false end
 if __checklevel__ == nil then __checklevel__ = 0     end
 if __embedded__   == nil then __embedded__   = false end
+if __max_frames__ == nil then __max_frames__ = false end
+if __app__        == nil then __app__        = false end
 
 ffi = require('ffi')
 jit = require('jit')

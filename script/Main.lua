@@ -13,7 +13,7 @@ Env.Call(function ()
   dofile('./script/Config.App.lua')
   if io.exists ('./script/Config.Local.lua') then dofile('./script/Config.Local.lua') end
 
-  if __max_frames__ then
+  if type(__max_frames__) == 'number' and __max_frames__ > 0 then
     Config.run.maxFrames = __max_frames__
   end
 
