@@ -5,6 +5,7 @@ local GenUtil = {}
 -- Normal gives the module's desired surface normal direction, while facing
 -- gives the direction in which the module should be free of obstruction
 function GenUtil.FindMountPoint (mesh, bsp, rng, normal, facing, maxTries)
+  if not bsp then return nil end
   local radius = mesh:getRadius()
   local center = mesh:getCenter()
   local e2, e3 = Math.OrthoBasis(normal)

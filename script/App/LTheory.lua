@@ -5,8 +5,12 @@ local LTheory = Application()
 local rng = RNG.FromTime()
 
 function LTheory:generate ()
-  self.seed = rng:get64()
-  if true then
+  if Config.gen.seedGlobal then
+    self.seed = Config.gen.seedGlobal
+  else
+    self.seed = rng:get64()
+  end
+  if false then
     -- self.seed = 7035008865122330386ULL
     -- self.seed = 15054808765102574876ULL
     -- self.seed = 1777258448479734603ULL
@@ -29,7 +33,7 @@ function LTheory:generate ()
 
     -- player escorts
     local ships = {}
-    for i = 1, 10 do
+    for i = 1, Config.game.friendlies do
       local escort = self.system:spawnShip()
       local offset = rng:getSphere():scale(100)
       escort:setPos(ship:getPos() + offset)
@@ -46,20 +50,20 @@ function LTheory:generate ()
     end
   end
 
-  for i = 1, 1 do
+  for i = 1, Config.gen.nStations do
     local station = self.system:spawnStation()
   end
 
-  for i = 1, 0 do
+  for i = 1, Config.game.enemies do
     self.system:spawnAI(100)
   end
 
-  for i = 1, 1 do
-    self.system:spawnAsteroidField(50, 10)
+  for i = 1, Config.gen.nPlanets do
+    self.system:spawnPlanet()
   end
 
-  for i = 1, 0 do
-    self.system:spawnPlanet()
+  if Config.gen.nBeltSize(self.system.rng) > 0 then
+    self.system:spawnAsteroidField(50, Config.gen.nBeltSize(self.system.rng))
   end
 end
 

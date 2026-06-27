@@ -24,6 +24,8 @@ local goodSeeds = {
 }
 
 Config.gen = {
+  buildShipBSP = false, -- set true once BSP_Create is stable on proc-gen meshes
+  skipMeshAO   = true,  -- skip computeAO in Shape:finalize (stability during refresh)
   seedGlobal = nil, -- Set to force deterministic global RNG
   seedSystem = nil, -- Set to force deterministic system generation
 
@@ -33,7 +35,7 @@ Config.gen = {
   nStations  = 0,
   nNPCs      = 0,
   nNPCsNew   = 0,
-  nPlanets   = 1,
+  nPlanets   = 0,
   nBeltSize  = function (rng) return 0 end, -- Asteroids per planetary belt
   nThrusters = 1,
   nTurrets   = 2,

@@ -795,7 +795,7 @@ function Shape:finalize ()
   mesh:splitNormals(0.99)
   if Config.gen.uvMapping then
     mesh = require('Gen.UVMap')(mesh, Config.gen.uvMapRes)
-  else
+  elseif not Config.gen.skipMeshAO then
     mesh:computeAO(0.6 * mesh:getRadius())
   end
   return mesh--, BSP.Create(mesh)
