@@ -13,7 +13,7 @@ function InputTest:onUpdate (dt)
   end
   --]]
 
-  ---[[ NOTE : Low Level API Usage Style 2 - Event Queue
+  --[[ NOTE : Low Level API Usage Style 2 - Event Queue
   local self = InputTest
   self.eventCount = Input.GetEventCount()
   for i = 1, Input.GetEventCount() do

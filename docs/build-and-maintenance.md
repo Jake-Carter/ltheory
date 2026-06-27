@@ -11,13 +11,15 @@ Limit Theory is a Lua-driven game built on **LibPHX**, a C shared library expose
 | [CMake](https://cmake.org/download/) ≥ 3.21 | Generate build files |
 | Visual Studio Community | MSVC compiler / IDE (Windows) |
 
-Clone with submodules (LibPHX ships prebuilt libs in `libphx/ext/`):
+Clone with submodules (LibPHX engine code lives in `libphx/`):
 
 ```bash
 git lfs install
 git clone --recursive https://github.com/JoshParnell/ltheory.git ltheory
 cd ltheory
 ```
+
+Third-party native libraries (SDL3, Bullet, FreeType, etc.) are **built from source** on first configure via CMake FetchContent. You do not need prebuilt binaries in `libphx/ext/lib/` for Windows x64.
 
 ---
 
@@ -83,9 +85,10 @@ You can also open `build/LTheory.sln` in Visual Studio. Use the **RelWithDebInfo
 **`libphx/CMakeLists.txt`:**
 
 - Builds shared library `phx` from all `libphx/src/*.cpp`.
-- Include paths: `include/`, `ext/include/`, `ext/include/bullet/`.
-- Links against prebuilt binaries in `ext/lib/${PLATARCH}/`.
-- On Windows: imports DLLs and **copies them to `bin/`** post-build.
+- Includes `libphx/cmake/Dependencies.cmake` — FetchContent / ExternalProject for third-party deps.
+- Include paths: fetched Bullet + FreeType headers, `include/`, legacy `ext/include/` (LuaJIT API), minimp3.
+- Links SDL3, FreeType, LZ4, Bullet, GLAD, LuaJIT (`lua51.dll`), and builds `lfs.dll`.
+- On Windows: copies `SDL3.dll`, `lua51.dll` next to `phx` / `lt` in `bin/` post-build.
 
 **`libphx/script/build/Shared.cmake`:**
 
@@ -164,46 +167,37 @@ libphx.lib = ffi.load(path, false)
 
 ## External Dependencies
 
-Headers and prebuilt libs live under `libphx/ext/`:
+Windows x64 builds pull and compile dependencies automatically (`libphx/cmake/Dependencies.cmake`). Pinned versions:
 
-```
-libphx/ext/
-  include/     # Headers (SDL, GL/GLEW, bullet, fmod, freetype, luajit, lz4, stb)
-  lib/
-    win64/     # .lib + .dll (Windows x64)
-    win32/     # 32-bit Windows
-    linux64/   # Shared objects for Linux (when present)
-```
+| Dependency | Pin | Role |
+|------------|-----|------|
+| **SDL3** | `release-3.2.8` | Window, input, events, WAV decode, audio output |
+| **GLAD** | vendored in `libphx/ext/glad/` | OpenGL 2.1 compatibility loader |
+| **FreeType** | `VER-2-13-3` | Font rasterization (static link) |
+| **LZ4** | `v1.10.0` | Compression (static link) |
+| **Bullet** | `3.25` | Physics (static link; headers from fetched `src/`) |
+| **LuaJIT** | `v2.1.0-beta3` | Lua runtime (`lua51.dll`; MSVC build script) |
+| **minimp3** | commit `7b590fd` | MP3 decode (header-only) |
+| **LuaFileSystem** | `v1_8_0` | Native `lfs.dll` for script I/O |
+| **OpenGL** | 2.1 compat | Requested via `Engine_Init(2, 1)` |
 
-### Versions (from headers in `ext/include/`)
+Audio uses the **SDL3 backend** (`PHX_AUDIO_SDL3=1`): WAV via `SDL_LoadWAV`, MP3 via minimp3. FMOD is optional (`PHX_ENABLE_FMOD=ON`) but off by default.
 
-| Dependency | Version | Notes |
-|------------|---------|-------|
-| **SDL2** | 2.0.14 | Strict runtime version check in `Engine_Init` |
-| **GLEW** | 2.0.0 | OpenGL extension loading |
-| **OpenGL** | 2.1 | Requested via `Engine_Init(2, 1)` |
-| **Bullet** | 2.87 | Static link on Windows |
-| **FMOD Studio** | 1.10.01 | `fmodL64.dll`, `fmodstudioL64.dll` |
-| **LuaJIT** | 2.1.0-beta3 | Shipped as `lua51.dll` (Lua 5.1 API) |
-| **FreeType** | 2.8.0 | Static `.lib` on Windows |
-| **LZ4** | 1.7.5 | DLL on Windows |
+Legacy headers under `libphx/ext/include/` (old SDL2, GLEW, FMOD, etc.) remain for reference; the active build uses fetched SDL3/FreeType/Bullet headers.
 
-### Windows linking
+### Windows runtime DLLs in `bin/`
 
-| Library | Link | Runtime copy to `bin/` |
-|---------|------|------------------------|
-| GLEW | `glew32.lib` → `glew32.dll` | Yes |
-| SDL2 | `SDL2.lib` → `SDL2.dll` | Yes |
-| LuaJIT | `lua51.lib` → `lua51.dll` | Yes |
-| LZ4 | `liblz4.lib` → `liblz4.dll` | Yes |
-| FMOD | `fmodL64_vc.lib`, `fmodstudioL64_vc.lib` | Yes |
-| FreeType | `freetype.lib` | Static |
-| Bullet | `BulletCollision`, `BulletDynamics`, `LinearMath` | Static |
-| OpenGL | `opengl32.lib` | System |
+| File | Source |
+|------|--------|
+| `libphx64.dll` | Engine |
+| `SDL3.dll` | SDL3 FetchContent |
+| `lua51.dll` | LuaJIT ExternalProject |
+| `lfs.dll` | LuaFileSystem target |
+| `lt64.exe` | Game executable |
 
 ### Linux linking
 
-Links against system-style names: `GL`, `GLEW`, `SDL2`, `luajit-5.1`, `lz4`, `fmod`, `fmodstudio`, `freetype`, `BulletCollision`, `BulletDynamics`. Sets `-Wl,-rpath,../ext/lib/${PLATARCH}`. The Windows-style `add_extlib` / DLL-copy block is marked `# TODO`.
+Linux CMake paths exist but are less tested than Windows. SDL3 + static deps are linked similarly; verify `rpath` / shared library layout before relying on a Linux build.
 
 ---
 
@@ -230,12 +224,12 @@ Root `.gitattributes` tracks via LFS:
 
 **Before clone/pull:** run `git lfs install`.
 
-**Not LFS-tracked** (may be missing from a bare checkout):
+**Not LFS-tracked** (verify after clone):
 
-- Font files (`.ttf`, `.otf`) — `res/font/` may only contain license text; game code references `Share`, `Exo2Bold`, `NovaMono` via `Cache.Font`.
-- Prebuilt native libs in `libphx/ext/lib/` come from the **libphx submodule**.
+- Font files (`.ttf`, `.otf`) — `res/font/` should contain `Share.ttf` and others; some filenames may be placeholders if LFS was not used. The metrics overlay uses `Share`; UI fonts use `Share` / `Exo2Bold` via `Config.ui.font`.
+- `.ogx` sounds are legacy FMOD bank paths; the SDL3 audio backend loads `.wav` and `.mp3` only.
 
-Use `git clone --recursive` so `libphx` and its `ext/` tree are populated.
+Use `git clone --recursive` so the `libphx` submodule is present. First CMake configure downloads third-party sources into `build/_deps/`.
 
 ---
 
@@ -257,11 +251,17 @@ If you build from the IDE, select **RelWithDebInfo** for normal use. Debug build
 
 Debug and RelWithDebInfo builds are now aligned: Debug sets `DEBUG=1` so Lua loads `libphx64d` matching the Debug DLL name.
 
-### Other gaps
+### Smoke-test apps
 
-- `CHECK_LEVEL` is never set from CMake; engine assertions stay at level 0.
-- Linux ext-lib packaging is incomplete.
-- Font assets may be absent from a bare checkout.
+After building, from the repo root:
+
+```bash
+bin/lt64.exe InputTest    # window + input loop (default in Config.App.lua)
+bin/lt64.exe AudioTest    # SDL3 audio + 3D sound demo
+bin/lt64.exe PhysicsTest  # physics sandbox
+```
+
+Default app in `script/Config.App.lua` is currently `InputTest` for refresh validation; set `Config.app = 'LTheory'` for the full game.
 
 ---
 
@@ -319,7 +319,7 @@ bin/lt64.exe PhysicsTest
 2. `script/Config.App.lua` — default app name, debug, generation, render, UI settings.
 3. `__app__` — from CLI arg or `Config.app` (default `'LTheory'`).
 
-Apps in `script/App/`: `LTheory`, `PhysicsTest`, `BSPTest`, `FMODTest`, `InputTest`, `GenTex2D`, `TestEcon`, `TestHmGui`, `TestImGui`, `TestIcon`, `TestStrMap`, `CoordTest`, `Todo`.
+Apps in `script/App/`: `LTheory`, `PhysicsTest`, `AudioTest` (wraps `FMODTest.lua`), `InputTest`, `BSPTest`, `GenTex2D`, and others.
 
 ### DLL search path (Windows)
 
@@ -353,11 +353,17 @@ cmake --build build --target run
 
 ## Maintaining Dependencies
 
-LibPHX vendors prebuilt binaries in `libphx/ext/lib/`. To upgrade a dependency:
+Dependency pins live in `libphx/cmake/Dependencies.cmake`. To upgrade:
 
-1. Replace headers in `libphx/ext/include/`
-2. Replace `.lib`/`.dll` (Windows) or `.so` (Linux) in `libphx/ext/lib/${PLATARCH}/`
-3. Update any API changes in corresponding `libphx/src/` and `libphx/script/ffi/` files
-4. Rebuild and run test apps (`PhysicsTest`, `FMODTest`, etc.) to validate
+1. Change the `GIT_TAG` (or minimp3 commit) in `Dependencies.cmake`.
+2. Reconfigure: `cmake -S . -B build -A x64` (FetchContent re-downloads as needed).
+3. Fix API drift in `libphx/src/` and `libphx/script/ffi/` if headers changed.
+4. Run smoke apps: `InputTest`, `AudioTest`, then `LTheory`.
+
+GLAD can be regenerated for OpenGL 2.1 compatibility:
+
+```bash
+python -m glad --api="gl:compatibility=2.1" --out-path=libphx/ext/glad c
+```
 
 The engine submodule is at https://github.com/JoshParnell/libphx.git — engine changes typically go there first, then the submodule pointer in ltheory is updated.

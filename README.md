@@ -43,7 +43,7 @@ cmake -S . -B build -A x64
 cmake --build build --config RelWithDebInfo
 ```
 
-This produces `bin/lt64.exe` and `bin/libphx64.dll`.
+This produces `bin/lt64.exe`, `bin/libphx64.dll`, `bin/SDL3.dll`, `bin/lua51.dll`, and `bin/lfs.dll`. First configure downloads and builds third-party libraries (SDL3, Bullet, FreeType, etc.) via CMake FetchContent — allow a few minutes and network access.
 
 Visual Studio is a multi-config generator, so pass `--config RelWithDebInfo` when building. If you open `build/LTheory.sln` in the IDE instead, select the **RelWithDebInfo** configuration there.
 
@@ -85,8 +85,11 @@ cmake --build build --target run --config RelWithDebInfo
 Or run directly:
 
 ```bash
-bin/lt64.exe                  # default app (LTheory)
-bin/lt64.exe PhysicsTest      # a specific script/App/*.lua
+bin/lt64.exe                  # default app (InputTest during refresh; see Config.App.lua)
+bin/lt64.exe InputTest        # input / window smoke test
+bin/lt64.exe AudioTest        # SDL3 audio smoke test
+bin/lt64.exe LTheory          # full game
+bin/lt64.exe PhysicsTest      # physics sandbox
 ```
 
 All top-level apps are in `script/App/`.

@@ -50,7 +50,7 @@ function Application:run ()
   self:onInit()
   self:onResize(self.resX, self.resY)
 
-  local font = Font.Load('NovaMono', 10)
+  local font = Font.Load('Share', 10)
   self.lastUpdate = TimeStamp.GetFuture(-1.0 / 60.0)
 
   if Config.jit.dumpasm then Jit.StartDump() end
