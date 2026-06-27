@@ -85,12 +85,17 @@ cmake --build build --target run --config RelWithDebInfo
 Or run directly:
 
 ```bash
-bin/lt64.exe                  # default app (InputTest during refresh; see Config.App.lua)
+bin/lt64.exe                  # default app (InputTest; see Config.App.lua)
 bin/lt64.exe InputTest        # input / window smoke test
 bin/lt64.exe AudioTest        # SDL3 audio smoke test
-bin/lt64.exe LTheory          # full game
-bin/lt64.exe PhysicsTest      # physics sandbox
+bin/lt64.exe PhysicsAttachTest --frames 60
+bin/lt64.exe PhysicsTest --frames 120
+bin/lt64.exe FontTest --frames 120
+bin/lt64.exe ProcGenTest --frames 120
+bin/lt64.exe LTheory          # full game (runs until quit; --frames N optional)
 ```
+
+Smoke apps auto-exit when given `--frames N`, or use built-in frame limits where noted in each app. Recommended order: InputTest → AudioTest → PhysicsAttachTest → ProcGenTest → PhysicsTest → LTheory.
 
 All top-level apps are in `script/App/`.
 

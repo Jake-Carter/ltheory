@@ -199,7 +199,7 @@ function HUD:controlTurrets (e)
 
   -- Compute a firing solution separately for each turret to support
   -- different projectile velocities & ranges
-  for turret in e:iterSocketsByType(SocketType.Turret) do
+  for turret in e:iterSocketsByType(MountType.Turret) do
     if Config.game.autoTarget and targetPos then
       turret:aimAtTarget(target, fallback)
     else

@@ -60,7 +60,7 @@ function Attack:onUpdatePassive (e, dt)
   local align = (self.target:getPos() - e:getPos()):normalize():dot(e:getForward())
   if align < 0.25 then return end
   local firing = Config.game.aiFire(dt, rng)
-  for turret in e:iterSocketsByType(SocketType.Turret) do
+  for turret in e:iterSocketsByType(MountType.Turret) do
     turret:aimAtTarget(self.target, self.target:getPos())
     if firing then turret:fire() end
   end

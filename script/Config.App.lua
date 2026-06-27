@@ -5,6 +5,8 @@ Config.run = {
   minimalAttach = false, -- true: two-box FFI attach only (no ship proc-gen)
   singleAsteroid = false, -- true: one asteroid in system, no compound attach
   skipAttach = false,   -- skip final asteroid attach in full/system mode
+  procGenSeed = nil,    -- fixed seed for ProcGenTest (nil = use kDefaultSeed in app)
+  procGenBuildBSP = false, -- ProcGenTest only; attempt BSP.Create when true
 }
 
 Config.debug = {
@@ -32,18 +34,18 @@ local goodSeeds = {
 
 Config.gen = {
   buildShipBSP = false, -- set true once BSP_Create is stable on proc-gen meshes
-  skipMeshAO   = true,  -- skip computeAO in Shape:finalize (stability during refresh)
+  skipMeshAO   = false, -- mesh AO in Shape:finalize (ProcGenTest validates this path)
   seedGlobal = nil, -- Set to force deterministic global RNG
   seedSystem = nil, -- Set to force deterministic system generation
 
   origin     = Vec3f(0, 0, 0), -- Set far from zero to test engine precision
   nFields    = 20,
   nFieldSize = function (rng) return 200 * (rng:getExp() + 1.0) end,
-  nStations  = 0,
+  nStations  = 1,
   nNPCs      = 0,
   nNPCsNew   = 0,
   nPlanets   = 0,
-  nBeltSize  = function (rng) return 0 end, -- Asteroids per planetary belt
+  nBeltSize  = function (rng) return 0 end, -- Asteroids per planetary belt; raise for full gate
   nThrusters = 1,
   nTurrets   = 2,
 

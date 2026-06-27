@@ -66,7 +66,7 @@ function ThrustController:update (e, dt)
   end
 
   -- TODO : This is terrible
-  for thruster in e:iterSocketsByType(SocketType.Thruster) do
+  for thruster in e:iterSocketsByType(MountType.Thruster) do
     thruster.activationT = self.forward
     thruster.boostT = boost
   end
@@ -75,7 +75,7 @@ end
 --------------------------------------------------------------------------------
 
 local function killThrust (self)
-  for thruster in self:iterSocketsByType(SocketType.Thruster) do
+  for thruster in self:iterSocketsByType(MountType.Thruster) do
     thruster.activationT = 0
     thruster.boostT = 0
   end

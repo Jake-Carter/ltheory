@@ -1,5 +1,5 @@
 local Entity = require('Game.Entity')
-local Socket = require('Game.Socket')
+local MountSocket = require('Game.MountSocket')
 
 local function iterateSocketsByType (s)
   s.i = s.i + 1
@@ -14,7 +14,7 @@ local function iterateSocketsByType (s)
 end
 
 function Entity:addSocket (type, pos, external)
-  insert(self.sockets, Socket(type, pos, external))
+  insert(self.sockets, MountSocket(type, pos, external))
 end
 
 function Entity:addSockets ()
@@ -52,7 +52,7 @@ function Entity:plug (child)
       socket.child = child
       self:attach(child, socket.pos, Quat.Identity())
 
-      if type == SocketType.Turret then
+      if type == MountType.Turret then
         self.socketRangeMin = min(self.socketRangeMin, child.projRange)
         self.socketRangeMax = max(self.socketRangeMax, child.projRange)
         self.socketSpeedMin = min(self.socketSpeedMin, child.projSpeed)

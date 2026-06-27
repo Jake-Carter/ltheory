@@ -253,15 +253,28 @@ Debug and RelWithDebInfo builds are now aligned: Debug sets `DEBUG=1` so Lua loa
 
 ### Smoke-test apps
 
-After building, from the repo root:
+After building, from the repo root (pass `--frames N` for scripted auto-exit):
 
 ```bash
-bin/lt64.exe InputTest    # window + input loop (default in Config.App.lua)
-bin/lt64.exe AudioTest    # SDL3 audio + 3D sound demo
-bin/lt64.exe PhysicsTest  # physics sandbox
+bin/lt64.exe InputTest              # window + input loop (default in Config.App.lua)
+bin/lt64.exe AudioTest              # SDL3 audio + 3D listener
+bin/lt64.exe PhysicsAttachTest --frames 60
+bin/lt64.exe ProcGenTest --frames 120
+bin/lt64.exe PhysicsTest --frames 120
+bin/lt64.exe FontTest --frames 120
+bin/lt64.exe LTheory                # composition gate; optional --frames N
+bin/lt64.exe BSPTest                # interactive BSP debugger (test 5: sphere/triangle)
 ```
 
-Default app in `script/Config.App.lua` is currently `InputTest` for refresh validation; set `Config.app = 'LTheory'` for the full game.
+Recommended validation order: **InputTest → AudioTest → PhysicsAttachTest → ProcGenTest → PhysicsTest → LTheory**.
+
+Default app in `script/Config.App.lua` is `InputTest`. Set `Config.app = 'LTheory'` or pass `LTheory` on the CLI for the full game.
+
+`Config.run` flags used by smoke apps: `maxFrames` (from `--frames`), `minimalAttach` / `skipAttach` (PhysicsAttachTest), `procGenSeed` / `procGenBuildBSP` (ProcGenTest).
+
+### Legacy prebuilt binaries
+
+`libphx/ext/lib/` is **not used** by the FetchContent build and is listed in `libphx/.gitignore`. Legacy headers under `libphx/ext/include/` (old SDL2, GLEW, FMOD, Bullet 2.x) remain for reference; the active build uses fetched SDL3, FreeType, and Bullet 3.25 headers via `cmake/Dependencies.cmake`.
 
 ---
 
@@ -276,7 +289,7 @@ Runtime assets resolve through `Resource_Init()` using `./res/…` paths.
 | `res/texcube/` | Cube maps |
 | `res/sound/` | Audio (`.mp3`, `.wav`, `.ogx`) |
 | `res/mesh/` | Geometry (`.obj`, `.bin`) |
-| `res/font/` | Font files (may be missing) |
+| `res/font/` | Font files (Share, NovaMono, Exo2Bold, OFL licenses) |
 | `res/grammar/` | Procedural text grammars (`.txt`) |
 | `res/gen/` | Generation helper scripts |
 | `res/` (root) | `gamecontrollerdb_205.txt` (SDL gamepad mappings) |
@@ -319,7 +332,7 @@ bin/lt64.exe PhysicsTest
 2. `script/Config.App.lua` — default app name, debug, generation, render, UI settings.
 3. `__app__` — from CLI arg or `Config.app` (default `'LTheory'`).
 
-Apps in `script/App/`: `LTheory`, `PhysicsTest`, `AudioTest` (wraps `FMODTest.lua`), `InputTest`, `BSPTest`, `GenTex2D`, and others.
+Apps in `script/App/`: `LTheory`, `PhysicsTest`, `PhysicsAttachTest`, `ProcGenTest`, `FontTest`, `AudioTest`, `InputTest`, `BSPTest`, `GenTex2D`, and others.
 
 ### DLL search path (Windows)
 

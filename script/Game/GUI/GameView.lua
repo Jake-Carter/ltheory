@@ -69,7 +69,7 @@ function GameView:draw (focus, active)
 
     do -- Composite albedo & accumulated light buffer
       self.renderer.buffer1:push()
-      local shader = Cache.Shader('worldray', 'light/composite')
+      local shader = Cache.Shader('identity', 'light/composite')
       shader:start()
       Shader.SetTex2D('texAlbedo', self.renderer.buffer0)
       Shader.SetTex2D('texDepth', self.renderer.zBufferL)

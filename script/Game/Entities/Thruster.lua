@@ -27,7 +27,7 @@ Thruster = subclass(Entity, function (self)
 end)
 
 function Thruster:getSocketType ()
-  return SocketType.Thruster
+  return MountType.Thruster
 end
 
 function Thruster:render (state)

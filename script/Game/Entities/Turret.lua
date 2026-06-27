@@ -54,7 +54,7 @@ Turret = subclass(Entity, function (self)
 end)
 
 function Turret:getSocketType ()
-  return SocketType.Turret
+  return MountType.Turret
 end
 
 function Turret:aimAt (pos)
