@@ -29,7 +29,7 @@ function LTheory:generate ()
 
     -- player escorts
     local ships = {}
-    for i = 1, 100 do
+    for i = 1, 10 do
       local escort = self.system:spawnShip()
       local offset = rng:getSphere():scale(100)
       escort:setPos(ship:getPos() + offset)
@@ -55,7 +55,7 @@ function LTheory:generate ()
   end
 
   for i = 1, 1 do
-    self.system:spawnAsteroidField(500, 10)
+    self.system:spawnAsteroidField(50, 10)
   end
 
   for i = 1, 0 do

@@ -1,4 +1,4 @@
-Config.app = 'LTheory'
+Config.app = 'InputTest'
 
 Config.debug = {
   metrics         = true,
@@ -40,7 +40,7 @@ Config.gen = {
 
   nDustFlecks = 1024,
   nDustClouds = 1024,
-  nStars      = function (rng) return 30000 * (1.0 + 0.5 * rng:getExp()) end,
+  nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
 
   shipRes     = 8,
   nebulaRes   = 1024,
@@ -112,9 +112,19 @@ Config.ui.color = {
   controlActive     = Color(0.14, 0.70, 0.14, 0.4),
 }
 
-Config.ui.font = {
-  normal     = Cache.Font('Share', 14),
+Config.ui.font = setmetatable({
   normalSize = 14,
-  title      = Cache.Font('Exo2Bold', 10),
   titleSize  = 10,
-}
+}, {
+  __index = function (self, key)
+    if key == 'normal' then
+      local font = Cache.Font('Share', self.normalSize)
+      rawset(self, key, font)
+      return font
+    elseif key == 'title' then
+      local font = Cache.Font('Exo2Bold', self.titleSize)
+      rawset(self, key, font)
+      return font
+    end
+  end,
+})

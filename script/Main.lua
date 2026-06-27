@@ -7,11 +7,12 @@ require('env.env')
 
 Env.Call(function ()
   require('phx.phx')
-  local app = __app__ or Config.app or 'ltheory'
   GlobalRestrict.On()
 
   dofile('./script/Config.App.lua')
   if io.exists ('./script/Config.Local.lua') then dofile('./script/Config.Local.lua') end
+
+  local app = __app__ or Config.app or 'InputTest'
 
   Namespace.LoadInline('Util')
   Namespace.Load      ('UI')
