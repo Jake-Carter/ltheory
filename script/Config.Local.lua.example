@@ -1,0 +1,3 @@
+-- Copy to script/Config.Local.lua to override defaults without editing Config.App.lua.
+-- Config.app = 'LTheory'
+-- Config.gen.nStars = function (rng) return 1000 end

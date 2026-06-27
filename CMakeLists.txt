@@ -1,6 +1,14 @@
 cmake_minimum_required (VERSION 3.21)
-project (LTheory)
 
+# Allow FetchContent deps (Bullet 3.25) that declare older cmake_minimum_required.
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.29")
+  cmake_policy (SET CMP0156 NEW)
+endif ()
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "4.0")
+  set (CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif ()
+
+project (LTheory)
 include (libphx/script/build/Shared.cmake)
 
 # Default to RelWithDebInfo. Single-config generators use this directly; for
