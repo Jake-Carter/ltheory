@@ -123,8 +123,8 @@ Config.ui.color = {
 
 Config.ui.font = setmetatable({
   normalFamily = 'Share',
-  titleFamily  = 'Share', -- Exo2Bold.ttf was an LFS/HTML placeholder; use Share until real face is bundled
-  monoFamily   = 'Share', -- NovaMono.ttf was an LFS/HTML placeholder; use Share until real face is bundled
+  titleFamily  = 'Exo2Bold',
+  monoFamily   = 'NovaMono',
   normalSize   = 14,
   titleSize    = 10,
   hudSize      = 16,
