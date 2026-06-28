@@ -4,9 +4,14 @@ local DebugControl = require('Game.Controls.DebugControl')
 local LTheory = Application()
 local rng = RNG.FromTime()
 
+local function fail (msg)
+  error('LTheory: ' .. msg, 2)
+end
+
 function LTheory:generate ()
-  if Config.gen.seedGlobal then
-    self.seed = Config.gen.seedGlobal
+  local fixedSeed = (Config.run and Config.run.ltheorySeed) or Config.gen.seedGlobal
+  if fixedSeed then
+    self.seed = fixedSeed
   else
     self.seed = rng:get64()
   end
@@ -51,25 +56,60 @@ function LTheory:generate ()
   end
 
   for i = 1, Config.gen.nStations do
-    local station = self.system:spawnStation()
+    self.system:spawnStation()
   end
 
   for i = 1, Config.game.enemies do
-    self.system:spawnAI(100)
+    self.system:spawnAI(Config.game.aiShipCount or 100)
   end
 
   for i = 1, Config.gen.nPlanets do
     self.system:spawnPlanet()
   end
 
-  if Config.gen.nBeltSize(self.system.rng) > 0 then
-    self.system:spawnAsteroidField(50, Config.gen.nBeltSize(self.system.rng))
+  local beltCount = Config.gen.beltFieldCount or 0
+  if beltCount > 0 then
+    self.system:spawnAsteroidField(beltCount, Config.gen.nBeltSize(self.system.rng))
   end
+
+  self.playerShip = ship
+end
+
+function LTheory:validateGate ()
+  if not self.system then fail('no system after generate') end
+
+  local ship = self.player:getControlling()
+  if not ship then fail('player has no controlling ship') end
+  if ship ~= self.playerShip then fail('controlling ship mismatch') end
+
+  local nPlayers = #self.system.players
+  local expectedPlayers = Config.game.enemies
+  if nPlayers ~= expectedPlayers then
+    fail(format('expected %d AI players, got %d', expectedPlayers, nPlayers))
+  end
+
+  printf('LTheory: gate ok — ship=%s stations=%d planets=%d belt=%d ore=%d friendlies=%d enemies=%d AI=%d',
+    ship:getName() or 'ship',
+    Config.gen.nStations,
+    Config.gen.nPlanets,
+    Config.gen.beltFieldCount or 0,
+    Config.gen.nBeltSize(self.system.rng),
+    Config.game.friendlies,
+    Config.game.enemies,
+    nPlayers)
 end
 
 function LTheory:onInit ()
+  if self.maxFrames == nil then
+    self.maxFrames = (Config.run and Config.run.maxFrames) or nil
+  end
+  self.gateMode = self.maxFrames ~= nil and self.maxFrames > 0
+
+  Config.render.vsync = false
+
   self.player = Entities.Player()
   self:generate()
+  if self.gateMode then self:validateGate() end
 
   DebugControl.ltheory = self
   self.gameView = GUI.GameView(self.player)
@@ -90,6 +130,14 @@ end
 
 function LTheory:onDraw ()
   self.canvas:draw(self.resX, self.resY)
+end
+
+function LTheory:onExit ()
+  if self.gateMode then
+    local ship = self.player and self.player:getControlling()
+    if not ship then fail('gate exit: no controlling ship') end
+    printf('LTheory: passed (%d frames)', self.frameCount or 0)
+  end
 end
 
 return LTheory

@@ -92,7 +92,7 @@ bin/lt64.exe PhysicsAttachTest --frames 60
 bin/lt64.exe PhysicsTest --frames 120
 bin/lt64.exe FontTest --frames 120
 bin/lt64.exe ProcGenTest --frames 120
-bin/lt64.exe LTheory          # full game (runs until quit; --frames N optional)
+bin/lt64.exe LTheory --frames 300  # composition gate (escorts, AI, planet, belt)
 ```
 
 Smoke apps auto-exit when given `--frames N`, or use built-in frame limits where noted in each app. Recommended order: InputTest → AudioTest → PhysicsAttachTest → ProcGenTest → PhysicsTest → LTheory.

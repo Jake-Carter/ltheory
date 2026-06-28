@@ -8,8 +8,10 @@ local wrap     = Math.Wrap
 --   IE, a poly fails a shape:polyValid(poly) test,
 --   the function MUST skip that poly for that operation
 --   so that we prevent junk shapes & crashes in release.
--- It is assumed that the validPoly function will ASSERT
---   so that the devs can debug the offending shape.
+
+-- Match libphx PLANE_THICKNESS_EPSILON (1e-4) sliver threshold in Polygon/Triangle validate
+local kMinEdgeLen = 0.75 * 1e-4
+local kMinNormalLen = 1e-6
 
 local Shape = {}
 Shape.__index = Shape
@@ -193,36 +195,39 @@ function Shape:getFaceCentroid (poly)
   return c
 end
 
--- Compute poly face normal as area-weighted average of edge cross-products
+-- Compute polygon face normal (Newell's method; robust for quads and non-planar polys)
 function Shape:getFaceNormal (poly)
-  if #poly < 3 then
-    assert(#poly >= 3)
-    return nil
-  end
+  if #poly < 3 then return nil end
 
   local n = Vec3d(0, 0, 0)
-  for i = 1, #poly - 2 do
-    local p0 = self:getVertex(poly[1])
-    local p1 = self:getVertex(poly[1 + i])
-    local p2 = self:getVertex(poly[2 + i])
-
-    if p0 == nil or p1 == nil or p2 == nil then
-      --assert(p0, p1, p2)
-      return nil
-    end
-
-    n:iadd((p1 - p0):cross(p2 - p0))
+  for i = 1, #poly do
+    local j = (i % #poly) + 1
+    local cur = self:getVertex(poly[i])
+    local nxt = self:getVertex(poly[j])
+    if not cur or not nxt then return nil end
+    n.x = n.x + (cur.y - nxt.y) * (cur.z + nxt.z)
+    n.y = n.y + (cur.z - nxt.z) * (cur.x + nxt.x)
+    n.z = n.z + (cur.x - nxt.x) * (cur.y + nxt.y)
   end
 
-  if n:length() > 1e-6 then
-    n:inormalize()
+  local len = n:length()
+  if len > kMinNormalLen then
+    n:idivs(len)
     return n
-  else
-    print("Bad normal at poly:")
-    self:printPoly(poly)
-    --assert(n:length() > 1e-6)
   end
   return nil
+end
+
+function Shape:triValid (tri)
+  if #tri < 3 then return false end
+  local p0 = self:getVertex(tri[1])
+  local p1 = self:getVertex(tri[2])
+  local p2 = self:getVertex(tri[3])
+  if not p0 or not p1 or not p2 then return false end
+  if (p1 - p0):length() < kMinEdgeLen then return false end
+  if (p2 - p1):length() < kMinEdgeLen then return false end
+  if (p0 - p2):length() < kMinEdgeLen then return false end
+  return self:getFaceNormal(tri) ~= nil
 end
 
 -- returns the first poly found
@@ -398,15 +403,21 @@ end
 -- NO NEW VERTICIES
 -- GOOD for mesh finalization; NOT good for warping & adding detail
 function Shape:triangulateFan ()
+  local out = {}
   for i = 1, #self.polys do
     local poly = self.polys[i]
-    if self:polyValid(poly) then
+    if not self:polyValid(poly) then
+      -- skip degenerate faces rather than leaving invalid n-gons in the list
+    elseif #poly == 3 then
+      out[#out + 1] = poly
+    else
+      out[#out + 1] = { poly[1], poly[2], poly[3] }
       for j = 2, #poly - 2 do
-        self.polys[#self.polys + 1] = { poly[1], poly[j + 1], poly[j + 2] }
+        out[#out + 1] = { poly[1], poly[j + 1], poly[j + 2] }
       end
-      self.polys[i] = { poly[1], poly[2], poly[3] }
     end
   end
+  self.polys = out
 end
 
 -- InvertPoly (int pi)
@@ -782,10 +793,18 @@ function Shape:finalize ()
     mesh:addVertex(vertex.x, vertex.y, vertex.z, 1, 0, 0, 0, 0)
   end
 
-  -- Copy tris
+  -- Copy tris (skip sliver/degenerate triangles that fail native mesh validate)
+  local nSkipped = 0
   for i = 1, #self.polys do
     local tri = self.polys[i]
-    mesh:addTri(tri[1], tri[2], tri[3])
+    if self:triValid(tri) then
+      mesh:addTri(tri[1], tri[2], tri[3])
+    else
+      nSkipped = nSkipped + 1
+    end
+  end
+  if nSkipped > 0 and Config.debug and Config.debug.metrics then
+    printf('Shape:finalize skipped %d degenerate tris', nSkipped)
   end
 
   mesh:center()

@@ -7,6 +7,7 @@ Config.run = {
   skipAttach = false,   -- skip final asteroid attach in full/system mode
   procGenSeed = nil,    -- fixed seed for ProcGenTest (nil = use kDefaultSeed in app)
   procGenBuildBSP = false, -- ProcGenTest only; attempt BSP.Create when true
+  ltheorySeed = nil,    -- fixed seed for LTheory gate (nil = random)
 }
 
 Config.debug = {
@@ -45,7 +46,8 @@ Config.gen = {
   nNPCs      = 0,
   nNPCsNew   = 0,
   nPlanets   = 1,
-  nBeltSize  = function (rng) return 5 end, -- small belt for composition gate
+  beltFieldCount = 500, -- asteroids in standalone belt (original LTheory default)
+  nBeltSize  = function (rng) return 10 end, -- ore-bearing asteroids in belt field; also per-planet ring in SystemBasic
   nThrusters = 1,
   nTurrets   = 2,
 
@@ -80,8 +82,9 @@ Config.game = {
 
   playerDamageResistance = 1.0,
 
-  enemies                = 0,
-  friendlies             = 0,
+  enemies                = 1,
+  friendlies             = 1,
+  aiShipCount            = 5, -- ships per spawnAI call (historically 100 in full game)
   squadSizeEnemy         = 8,
   squadSizeFriendly      = 8,
   spawnDistance          = 2000,
