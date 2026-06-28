@@ -99,7 +99,7 @@ Config.game = {
 }
 
 Config.render = {
-  fullscreen = false,
+  fullscreen = true,
   vsync      = true,
 }
 

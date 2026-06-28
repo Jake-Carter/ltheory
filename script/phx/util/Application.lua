@@ -44,6 +44,13 @@ function Application:run ()
   self.maxFrames = nil
   self.window:setVsync(Config.render.vsync)
 
+  if Config.render.fullscreen then
+    self.window:setFullscreen(true)
+    local size = self.window:getSize()
+    self.resX = size.x
+    self.resY = size.y
+  end
+
   if Config.jit.profile and Config.jit.profileInit then Jit.StartProfile() end
 
   Preload.Run()
