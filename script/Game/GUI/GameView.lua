@@ -18,12 +18,13 @@ function GameView:draw (focus, active)
 
   local world = self.player:getRoot()
   local eye = self.camera.pos
+  local camVel = self.camVel
   world:beginRender()
 
   do -- Opaque Pass
     Profiler.Begin('Render.Opaque')
     self.renderer:start(self.sx, self.sy, ss)
-    world:render(Event.Render(BlendMode.Disabled, eye))
+    world:render(Event.Render(BlendMode.Disabled, eye, camVel))
     self.renderer:stop()
     Profiler.End()
   end
@@ -84,13 +85,13 @@ function GameView:draw (focus, active)
 
   if true then -- Alpha (Additive) Pass
     self.renderer:startAlpha(BlendMode.Additive)
-      world:render(Event.Render(BlendMode.Additive, eye))
+      world:render(Event.Render(BlendMode.Additive, eye, camVel))
     self.renderer:stopAlpha()
   end
 
   if true then -- Alpha Pass
     self.renderer:startAlpha(BlendMode.Alpha)
-      world:render(Event.Render(BlendMode.Alpha, eye))
+      world:render(Event.Render(BlendMode.Alpha, eye, camVel))
 
       -- TODO : This should be moved into a render pass
       if Config.debug.physics.drawBoundingBoxesLocal or
@@ -194,10 +195,12 @@ function GameView:onUpdate (state)
               Further reason to invert the current Camera-Control relationship. ]]
   self.camera:onUpdate(state.dt)
 
-  do -- Compute Eye Velocity EMA
+  self.eyeVel:setv(self.player:getControlling():getVelocity())
+
+  do -- Camera motion for dust flecks (Audio listener uses ship velocity below)
     local eye = self.camera.pos
-    local v = (eye - self.eyeLast):scale(1.0 / max(1e-10, state.dt))
-    self.eyeVel:setv(self.player:getControlling():getVelocity())
+    local dt = max(1e-10, state.dt)
+    self.camVel:setv((eye - self.eyeLast):scale(1.0 / dt))
     self.eyeLast:setv(eye)
   end
 
@@ -254,12 +257,14 @@ function GameView.Create (player)
     camera      = nil,
     eyeLast     = nil,
     eyeVel      = nil,
+    camVel      = nil,
     children    = List(),
   }, GameView)
 
   self:setOrbit(false)
   self.eyeLast = self.camera.pos:clone()
   self.eyeVel  = self.player:getControlling():getVelocity():clone()
+  self.camVel  = Vec3f(0, 0, 0)
   return self
 end
 

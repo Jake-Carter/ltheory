@@ -70,17 +70,19 @@ function Dust:render (state)
     Profiler.End()
   elseif state.mode == BlendMode.Additive then
     Profiler.Begin('DustFlecks.RenderAdditive')
-    -- TODO : Camera velocity
-    local vl = 0 -- state.velocity:length()
-    if vl > 1e-6 then
-      local vn = state.velocity:normalize()
-      local shader = Cache.Shader('billboard/wrapped', 'effect/dustfleck')
-      shader:start()
-      Shader.SetMatrix('mWorld', mIdentity)
-      Shader.SetFloat2('size', 2.0, 0.1 * min(1000.0, vl))
-      Shader.SetFloat3('axis', vn.x, vn.y, vn.z)
-      self.flecks:draw()
-      shader:stop()
+    local vel = state.velocity
+    if vel then
+      local vl = vel:length()
+      if vl > 1e-6 then
+        local vn = vel:normalize()
+        local shader = Cache.Shader('billboard/wrapped', 'effect/dustfleck')
+        shader:start()
+        Shader.SetMatrix('mWorld', mIdentity)
+        Shader.SetFloat2('size', 2.0, 0.1 * min(1000.0, vl))
+        Shader.SetFloat3('axis', vn.x, vn.y, vn.z)
+        self.flecks:draw()
+        shader:stop()
+      end
     end
     Profiler.End()
   end

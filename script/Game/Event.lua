@@ -56,11 +56,12 @@ function Event.RemovedFromParent (parent)
   }
 end
 
-function Event.Render (mode, eye)
+function Event.Render (mode, eye, velocity)
   return {
     type = Event.Render,
     mode = mode,
     eye = eye,
+    velocity = velocity,
   }
 end
 
