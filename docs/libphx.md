@@ -38,7 +38,7 @@ LibPHX uses a three-layer model: **C engine → LuaJIT FFI bindings → game scr
 └───────────────────────────┬─────────────────────────────────┘
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
-│  Third-party: SDL2, OpenGL/GLEW, Bullet, FMOD, LuaJIT, …    │
+│  Third-party: SDL3, OpenGL/GLAD, Bullet, LuaJIT, …        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -81,8 +81,8 @@ libphx/
 │   └── build/
 │       └── Shared.cmake    # Shared CMake helpers
 └── ext/
-    ├── include/            # Third-party headers
-    └── lib/${PLATARCH}/    # Prebuilt binaries (e.g. win64)
+    ├── glad/               # Vendored OpenGL loader
+    └── include/            # stb, LuaJIT API headers, windirent
 ```
 
 ---
@@ -101,8 +101,8 @@ libphx/
 
 **Files:** `Window.cpp`, `OpenGL.cpp`, `Viewport.cpp`, `ClipRect.cpp`
 
-- SDL2 owns windows and GL contexts.
-- `OpenGL_Init`: `glewInit()`, default GL state, pushes default `RenderState`.
+- SDL3 owns windows and GL contexts.
+- `OpenGL_Init`: GLAD loader, default GL state, pushes default `RenderState`.
 - Draw cycle: `Window_BeginDraw` → render → `Window_EndDraw` → swap.
 - Uses **legacy OpenGL** (matrix stacks, immediate-mode in `Draw.cpp`, GLSL `#version 130`).
 

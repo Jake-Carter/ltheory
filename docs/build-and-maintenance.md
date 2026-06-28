@@ -86,7 +86,7 @@ You can also open `build/LTheory.sln` in Visual Studio. Use the **RelWithDebInfo
 
 - Builds shared library `phx` from all `libphx/src/*.cpp`.
 - Includes `libphx/cmake/Dependencies.cmake` — FetchContent / ExternalProject for third-party deps.
-- Include paths: fetched Bullet + FreeType headers, `include/`, legacy `ext/include/` (LuaJIT API), minimp3.
+- Include paths: fetched Bullet, FreeType, and LZ4 headers; `include/`; vendored `ext/include/` (stb, LuaJIT API, windirent); minimp3.
 - Links SDL3, FreeType, LZ4, Bullet, GLAD, LuaJIT (`lua51.dll`), and builds `lfs.dll`.
 - On Windows: copies `SDL3.dll`, `lua51.dll` next to `phx` / `lt` in `bin/` post-build.
 
@@ -181,11 +181,11 @@ Windows x64 builds pull and compile dependencies automatically (`libphx/cmake/De
 | **LuaFileSystem** | `v1_8_0` | Native `lfs.dll` for script I/O |
 | **OpenGL** | 2.1 compat | Requested via `Engine_Init(2, 1)` |
 
-Audio uses the **SDL3 backend** (`PHX_AUDIO_SDL3=1`): WAV via `SDL_LoadWAV`, MP3 via minimp3. FMOD is optional (`PHX_ENABLE_FMOD=ON`) but off by default.
+Audio uses the **SDL3 backend** (`PHX_AUDIO_SDL3=1`): WAV via `SDL_LoadWAV`, MP3 via minimp3.
 
 `AudioTest` verifies playback without listening: it asserts `Audio.GetLastMixPeak()` exceeds a threshold while sounds play, and checks `Sound:getPlayPos()` advances. `Audio.Set3DSettings(doppler, minDistance, rolloff)` uses **minDistance** as full-volume range for 3D attenuation.
 
-Legacy headers under `libphx/ext/include/` (old SDL2, GLEW, FMOD, etc.) remain for reference; the active build uses fetched SDL3/FreeType/Bullet headers.
+Vendored under `libphx/ext/`: **GLAD** (`ext/glad/`), **stb** image I/O, **LuaJIT** public headers (`ext/include/luajit/`), and **windirent** for Windows directory iteration. All other native deps are fetched at configure time into `build/_deps/`.
 
 ### Windows runtime DLLs in `bin/`
 
@@ -276,9 +276,18 @@ Default app in `script/Config.App.lua` is `InputTest`. Set `Config.app = 'LTheor
 
 LTheory gate (`--frames N`): prints `gate ok` after generate (ship, station, planet, belt, escort, AI) and `passed` on clean exit.
 
-### Legacy prebuilt binaries
+### Vendored `ext/` layout
 
-`libphx/ext/lib/` is **not used** by the FetchContent build and is listed in `libphx/.gitignore`. Legacy headers under `libphx/ext/include/` (old SDL2, GLEW, FMOD, Bullet 2.x) remain for reference; the active build uses fetched SDL3, FreeType, and Bullet 3.25 headers via `cmake/Dependencies.cmake`.
+The FetchContent build does not use prebuilt binaries. `libphx/ext/` now contains only:
+
+| Path | Contents |
+|------|----------|
+| `ext/glad/` | OpenGL 2.1 compatibility loader (generated) |
+| `ext/include/stb/` | stb_image / stb_image_write |
+| `ext/include/luajit/` | LuaJIT public API headers (runtime built via ExternalProject) |
+| `ext/include/windirent.h` | POSIX `dirent` shim for MSVC |
+
+`libphx/ext/lib/` and `libphx/ext/bin/` are gitignored; delete any local copies left over from the legacy static-deps workflow.
 
 ---
 
