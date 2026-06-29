@@ -1,4 +1,16 @@
 local Bindings = require('phx.util.ApplicationBindings')
+local ConfigReload = require('phx.util.ConfigReload')
+
+-- Input.GetPressed is edge-triggered for a single frame via transition counts.
+-- At high frame rates that edge is easy to miss; track GetDown instead.
+local keyDown = {}
+
+local function pressed (button)
+  local down = Input.GetDown(button)
+  local prev = keyDown[button]
+  keyDown[button] = down
+  return down and not prev
+end
 
 local Application = class(function (self) end)
 
@@ -22,6 +34,10 @@ function Application:onResize       (sx, sy) end
 function Application:onUpdate       (dt)     end
 function Application:onExit         ()       end
 function Application:onInput        ()       end
+
+function Application:onConfigReload ()
+  self.window:setVsync(Config.render.vsync)
+end
 
 function Application:quit ()
   self.exit = true
@@ -101,15 +117,14 @@ function Application:run ()
       Profiler.SetValue('gcmem', GC.GetMemory())
       Profiler.Begin('App.onInput')
 
-       -- TODO : Remove this once bindings are fixed
-      if Input.GetKeyboardCtrl() and Input.GetPressed(Button.Keyboard.W) then self:quit() end
-      if Input.GetPressed(Bindings.Exit) then self:quit() end
+      if Input.GetKeyboardCtrl() and pressed(Button.Keyboard.W) then self:quit() end
+      if pressed(Bindings.Exit) then self:quit() end
 
-      if Input.GetPressed(Bindings.ProfilerToggle) then
+      if pressed(Bindings.ProfilerToggle) then
         toggleProfiler = true
       end
 
-      if Input.GetPressed(Bindings.Screenshot) then
+      if pressed(Bindings.Screenshot) then
         doScreenshot = true
         if Settings.exists('render.superSample') then
           self.prevSS = Settings.get('render.superSample')
@@ -117,11 +132,16 @@ function Application:run ()
         end
       end
 
-      if Input.GetPressed(Bindings.ToggleFullscreen) then
+      if pressed(Bindings.ToggleFullscreen) then
         self.window:toggleFullscreen()
       end
 
-      if Input.GetPressed(Bindings.Reload) then
+      if pressed(Bindings.Reload) then
+        if Config.debug.metrics then printf('Reloading config, shaders and assets (F5)') end
+        Profiler.Begin('Config.Reload')
+        ConfigReload.Run()
+        self:onConfigReload()
+        Profiler.End()
         Profiler.Begin('Engine.Reload')
         Cache.Clear()
         SendEvent('Engine.Reload')
@@ -133,7 +153,7 @@ function Application:run ()
         timeScale = Config.debug.timeAccelFactor
       end
 
-      if Input.GetPressed(Bindings.ToggleWireframe) then
+      if pressed(Bindings.ToggleWireframe) then
         Settings.set('render.wireframe', not Settings.get('render.wireframe'))
       end
 

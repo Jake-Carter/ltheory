@@ -77,7 +77,7 @@ function Pulse.Render (ents, state)
       for i = 1, #ents do
         local self = ents[i]
         Shader.ISetFloat(cacheTail.alpha, self.life / self.lifeMax)
-        Shader.ISetFloat2(cacheTail.size, 16, min(Config.game.pulseSize, 2.0 * self.dist))
+        Shader.ISetFloat2(cacheTail.size, 16, -min(Config.game.pulseSize, 2.0 * self.dist))
         Shader.ISetFloat3(cacheTail.axis, self.dir.x, self.dir.y, self.dir.z)
         Shader.ISetMatrix(cacheTail.mWorld, self.matrix)
         meshTail:drawBound()

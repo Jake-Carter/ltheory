@@ -1,6 +1,6 @@
 local function generateStarfield (rng, count)
   local self = Mesh.Create()
-  local brightness = 0.015
+  local brightness = Config.gen.starfieldBrightness or 0.015
   local distance = 1e6
   local radius = 1.0 / 30.0
 

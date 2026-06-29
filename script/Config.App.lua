@@ -51,12 +51,22 @@ Config.gen = {
   nThrusters = 1,
   nTurrets   = 2,
 
-  nDustFlecks = 1024,
+  nDustFlecks = 512,
   nDustClouds = 1024,
+  dustCloudDistance = 1024,  -- placement volume; must match kWrapDistance in billboard/wrapped.glsl
+  dustFleckDistance = 1024,
+  dustCloudSize     = 96,    -- billboard half-extent (world units); try 128–192 for larger patches
+  dustCloudOpacity  = 2.0,   -- alpha multiplier; try 2.5–4.0 if still too faint
+  dustCloudAlphaPower = 1.25, -- 1 = linear, 2 = old squared falloff (lower = more visible)
+  dustCloudFadeWidth  = 0.35, -- distance fade band (0.25 = old narrow band)
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
+  starfieldBrightness = 0.015, -- proc-gen star vertex color scale
+  starfieldIntensity  = 1.0,   -- runtime star billboard glow (starbg shader)
+  nebulaSkyIntensity  = 1.0,   -- nebula cubemap base brightness (skybox shader)
+  centralStarIntensity = 1.0,  -- central star bloom near starDir (skybox shader)
 
   shipRes     = 8,
-  nebulaRes   = 1024,
+  nebulaRes   = 4096,
 
   scalePlanet = 2000,
   playerShipSize = 4,

@@ -73,6 +73,10 @@ function LTheory:generate ()
   end
 
   self.playerShip = ship
+
+  if self.gameView then
+    self.gameView:refreshTarget()
+  end
 end
 
 function LTheory:validateGate ()
@@ -117,6 +121,11 @@ function LTheory:onInit ()
   self.canvas
     :add(self.gameView
       :add(Controls.MasterControl(self.gameView, self.player)))
+end
+
+function LTheory:onConfigReload ()
+  Application.onConfigReload(self)
+  self:generate()
 end
 
 function LTheory:onInput ()

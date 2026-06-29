@@ -244,6 +244,16 @@ function GameView:setOrbit (orbit)
   end
 end
 
+function GameView:refreshTarget ()
+  local target = self.player:getControlling()
+  self.cameraChase:setTarget(target)
+  self.cameraOrbit:setTarget(target)
+  self.camera:setTarget(target)
+  self.camera:warp()
+  self.eyeLast:setv(self.camera.pos)
+  self.eyeVel:setv(target:getVelocity())
+end
+
 function GameView.Create (player)
   -- TODO : Should Audio be handled in App/LTheory??
   Audio.Init()

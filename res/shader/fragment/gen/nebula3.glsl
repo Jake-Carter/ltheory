@@ -14,14 +14,7 @@ float bgDensity(vec3 p) {
 vec4 generate(vec3 dir) {
   vec3 c = vec3(0.0);
   float dense = bgDensity(dir);
-  /* Central Star. */ {
-    /* Dots between normalized Vec3fs may still be > 1 due to fp precision! */
-    float d = max(0.0, 1.0 - dot(dir, starDir));
-    float dd = 0.0;
-    dd += 8.0 * exp(-sqrt(4096.0 * d));
-    dd += 4.0 * exp(-sqrt(sqrt(1024.0 * d)));
-    c += dd * color;
-  }
+  /* Central star is applied at runtime in skybox.glsl. */
 
   float d1 = 2.0 * frCellNoise(dir, seed + 1.0, 4, 2.0) - 1.0;
   float d2 = 2.0 * frCellNoise(dir, seed + 2.0, 4, 2.0) - 1.0;

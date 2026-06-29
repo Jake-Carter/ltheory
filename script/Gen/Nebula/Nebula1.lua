@@ -6,15 +6,14 @@ local function generateNebulaIFS (rng, res, starDir)
   local shader = Cache.Shader('ui', 'gen/nebula')
   local ss = ShaderState.Create(shader)
 
+  local starR, starG, starB
   do -- Nebula color
     local h = rng:getUniform()
     local s = rng:getUniformRange(0.2, 0.8)
     local l = rng:getUniformRange(0.2, 0.8)
     local color = Color.FromHSL(h, s, l)
-    local r = color.r
-    local g = color.g
-    local b = color.b
-    ss:setFloat3('color', r, g, b)
+    starR, starG, starB = color.r, color.g, color.b
+    ss:setFloat3('color', starR, starG, starB)
   end
 
   local roughness = 0.65 + 0.05 * rng:getSign() * rng:getUniform()^2
@@ -29,7 +28,6 @@ local function generateNebulaIFS (rng, res, starDir)
   ss:setTex1D('lutR', lutR)
   ss:setTex1D('lutG', lutG)
   ss:setTex1D('lutB', lutB)
-  ss:setFloat3('starDir', starDir.x, starDir.y, starDir.z)
 
   self:generate(ss)
   self:genMipmap()
@@ -41,7 +39,7 @@ local function generateNebulaIFS (rng, res, starDir)
   lutG:free()
   lutB:free()
   Profiler.End()
-  return self
+  return self, starR, starG, starB
 end
 
 Generator.Add('Nebula', 1.0, generateNebulaIFS)

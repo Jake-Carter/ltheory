@@ -20,7 +20,7 @@ local System = subclass(Entity, function (self, seed)
   local starAngle = self.rng:getDir2()
   self.starDir = Vec3f(starAngle.x, 0, starAngle.y)
   self.nebula = Nebula(self.rng:get64(), self.starDir)
-  self.dust = Dust()
+  self.dust = Dust(seed)
 
   self.players = {}
   self.zones = {}

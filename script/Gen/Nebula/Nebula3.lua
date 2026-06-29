@@ -6,16 +6,17 @@ local function generateNebula3 (rng, res, starDir)
   local shader = Cache.Shader('ui', 'gen/nebula3')
   local ss = ShaderState.Create(shader)
 
+  local starR, starG, starB
   do -- Nebula color
     local h = rng:getUniform()
     local s = rng:getUniformRange(0.2, 0.8)
     local l = rng:getUniformRange(0.2, 0.8)
     local color = Color.FromHSL(h, s, l)
-    ss:setFloat3('color', color.r, color.g, color.b)
+    starR, starG, starB = color.r, color.g, color.b
+    ss:setFloat3('color', starR, starG, starB)
   end
 
   ss:setFloat('seed', rng:getUniformRange(1, 1000))
-  ss:setFloat3('starDir', starDir.x, starDir.y, starDir.z)
 
   self:generate(ss)
   self:genMipmap()
@@ -24,7 +25,7 @@ local function generateNebula3 (rng, res, starDir)
 
   ss:free()
   Profiler.End()
-  return self
+  return self, starR, starG, starB
 end
 
 Generator.Add('Nebula', 0.35, generateNebula3)

@@ -15,7 +15,7 @@ const float kVignetteHardness = 32.0;
 
 #define HDR 0
 #define COLOR_GRADING 1
-#define DESAT 0
+#define DESAT 1
 #define VIGNETTE 1
 
 void main() {

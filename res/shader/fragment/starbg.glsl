@@ -4,6 +4,8 @@
 #include color
 #include math
 
+uniform float intensity;
+
 void main() {
   float r = length(uv);
   float a = 0.0;
@@ -14,7 +16,7 @@ void main() {
   c *= mix(vec3(1.0), bg.xyz, 0.5);
   a += 0.5 * exp(-9.0 * sqrt(r));
   a += 1.0 * exp(-pow2(30.0 * r));
-  c *= a*a;
+  c *= a * a * intensity;
 
   setAlbedo(c.xyz);
   setAlpha(1.0);

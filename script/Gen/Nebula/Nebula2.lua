@@ -49,7 +49,8 @@ local function generateNebulaLightTransport (rng, res, starDir)
   buffSrc:setMinFilter(TexFilter.LinearMipLinear)
   buffSrc:genMipmap()
   Profiler.End()
-  return buffSrc
+  local starColor = Color.FromTemperature(6500, 2.0)
+  return buffSrc, starColor.r, starColor.g, starColor.b
 end
 
 Generator.Add('Nebula', 0.1, generateNebulaLightTransport)
