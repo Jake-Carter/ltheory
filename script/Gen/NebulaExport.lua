@@ -56,6 +56,9 @@ local function skyboxParams (overrides, nebula)
     nebulaAccentStrength = overrides.nebulaAccentStrength or Config.gen.nebulaAccentStrength or 0.4,
     nebulaAccentShadow   = overrides.nebulaAccentShadow or Config.gen.nebulaAccentShadow or 0.35,
     nebulaAccentRim      = overrides.nebulaAccentRim or Config.gen.nebulaAccentRim or 0.25,
+    nebulaEdgeHighlight  = overrides.nebulaEdgeHighlight or Config.gen.nebulaEdgeHighlight or 0.28,
+    nebulaEdgeOcclude    = overrides.nebulaEdgeOcclude or Config.gen.nebulaEdgeOcclude or 0.15,
+    nebulaEdgeScale      = overrides.nebulaEdgeScale or Config.gen.nebulaEdgeScale or 1.0,
     nebulaGradeContrast  = overrides.nebulaGradeContrast or Config.gen.nebulaGradeContrast or 0.45,
     nebulaGradeSaturation = overrides.nebulaGradeSaturation or Config.gen.nebulaGradeSaturation or 0.35,
     nebulaHighlightSaturation = overrides.nebulaHighlightSaturation or Config.gen.nebulaHighlightSaturation or 0.5,
@@ -170,6 +173,9 @@ function NebulaExport.renderComposedCubemap (nebula, overrides)
   ss:setFloat('nebulaAccentStrength', p.nebulaAccentStrength)
   ss:setFloat('nebulaAccentShadow', p.nebulaAccentShadow)
   ss:setFloat('nebulaAccentRim', p.nebulaAccentRim)
+  ss:setFloat('nebulaEdgeHighlight', p.nebulaEdgeHighlight)
+  ss:setFloat('nebulaEdgeOcclude', p.nebulaEdgeOcclude)
+  ss:setFloat('nebulaEdgeScale', p.nebulaEdgeScale)
   ss:setFloat('nebulaGradeContrast', p.nebulaGradeContrast)
   ss:setFloat('nebulaGradeSaturation', p.nebulaGradeSaturation)
   ss:setFloat('nebulaHighlightSaturation', p.nebulaHighlightSaturation)
@@ -236,6 +242,10 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
     nebulaAccentStrength = p.nebulaAccentStrength,
     nebulaAccentShadow = p.nebulaAccentShadow,
     nebulaAccentRim = p.nebulaAccentRim,
+    nebulaEdgeHighlight = p.nebulaEdgeHighlight,
+    nebulaEdgeOcclude = p.nebulaEdgeOcclude,
+    nebulaEdgeScale = p.nebulaEdgeScale,
+    nebulaBakeDetail = Config.gen.nebulaBakeDetail or 0.45,
     nebulaGradeContrast = p.nebulaGradeContrast,
     nebulaGradeSaturation = p.nebulaGradeSaturation,
     nebulaHighlightSaturation = p.nebulaHighlightSaturation,

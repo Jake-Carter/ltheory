@@ -8,6 +8,7 @@ const float kNebulaAmbientHaze = 0.12;
 vec3 composeSkybox (
     vec3 dir,
     vec3 nebula,
+    samplerCube envMap,
     vec3 starDir,
     vec3 starColor,
     vec3 accentColor,
@@ -22,7 +23,10 @@ vec3 composeSkybox (
     float accentRim,
     float gradeContrast,
     float gradeSaturation,
-    float highlightSaturation)
+    float highlightSaturation,
+    float edgeHighlight,
+    float edgeOcclude,
+    float edgeScale)
 {
   float rawD = lum(max(linear(nebula), vec3(0.0)));
   float density = gradeNebulaDensity(rawD, gradeContrast);
@@ -37,6 +41,9 @@ vec3 composeSkybox (
 
   c = gradeNebulaPalette(
     c, density, accentColor, nebulaStarTint, gradeSaturation, highlightSaturation);
+  c += nebulaStructureEdges(
+    envMap, dir, density, starColor, accentColor,
+    edgeHighlight, edgeOcclude, edgeScale);
   c *= intensity;
   c += nebulaStarScatterHighlight(nebula, starColor, scatter, nebulaStarHighlight) * intensity;
   c += centralStarGlow(dir, starDir, starColor) * starIntensity;

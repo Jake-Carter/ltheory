@@ -22,16 +22,20 @@ uniform float nebulaAccentRim;
 uniform float nebulaGradeContrast;
 uniform float nebulaGradeSaturation;
 uniform float nebulaHighlightSaturation;
+uniform float nebulaEdgeHighlight;
+uniform float nebulaEdgeOcclude;
+uniform float nebulaEdgeScale;
 
 void main() {
   vec3 V = normalize(vertPos);
   vec3 nebula = textureCube(envMap, V).xyz;
   vec3 c = composeSkybox(
-    V, nebula, starDir, starColor, accentColor,
+    V, nebula, envMap, starDir, starColor, accentColor,
     intensity, starIntensity,
     nebulaStarTint, nebulaStarHighlight, nebulaStarRange, nebulaChromaVariance,
     nebulaAccentStrength, nebulaAccentShadow, nebulaAccentRim,
-    nebulaGradeContrast, nebulaGradeSaturation, nebulaHighlightSaturation);
+    nebulaGradeContrast, nebulaGradeSaturation, nebulaHighlightSaturation,
+    nebulaEdgeHighlight, nebulaEdgeOcclude, nebulaEdgeScale);
 
   gl_FragDepth = 1.0;
 

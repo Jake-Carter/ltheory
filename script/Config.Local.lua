@@ -24,7 +24,7 @@ Config.gen.dustScatterIntensity = 3.0
 
 -- Config.gen.starfieldIntensity = 0.3
 -- Config.gen.starfieldBrightness = 0.2
--- Config.gen.nebulaSkyIntensity = 0.18
+-- Config.gen.nebulaSkyIntensity = 0.5
 -- Config.gen.centralStarIntensity = 0.5
 -- Config.gen.nebulaGIIntensity = 0.1
 -- ConfigReload.gen.nebulaStarTint = 1.0

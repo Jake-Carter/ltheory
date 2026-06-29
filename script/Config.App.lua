@@ -78,12 +78,16 @@ Config.gen = {
   nebulaAccentStrength  = 0.4,  -- mix accent into mid/shadow regions
   nebulaAccentShadow    = 0.35, -- accent in low-density shadow lanes
   nebulaAccentRim       = 0.25, -- split-complement rim on filaments
+  nebulaEdgeHighlight   = 1.28, -- compose-time accent rims on density edges
+  nebulaEdgeOcclude     = 1.15, -- compose-time dark lanes along cavity walls
+  nebulaEdgeScale       = 1.0,  -- finite-difference sample radius multiplier
+  nebulaBakeDetail      = 0.45, -- Nebula1 bake: high-freq cell overlay on macro structure
   nebulaGradeContrast   = 0.45, -- filament vs haze density separation
   nebulaGradeSaturation = 0.35, -- global saturation lift (compose)
   nebulaHighlightSaturation = 0.5, -- extra saturation in bright filaments
 
   shipRes     = 8,
-  nebulaRes   = 2048,
+  nebulaRes   = 4096,
 
   scalePlanet = 2000,
   playerShipSize = 4,

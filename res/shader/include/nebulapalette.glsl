@@ -144,4 +144,48 @@ vec3 nebulaAmbientHaze (vec3 baked, vec3 starColor, float amount) {
   return linear(starColor) * amount * pow(density, 0.65);
 }
 
+/* --- Spatial edge detail (compose-time, cubemap samples) ----------------- */
+
+float nebulaCubemapDensity (samplerCube map, vec3 dir, float lod) {
+  vec3 baked = max(linear(textureCubeLod(map, dir, lod).xyz), vec3(0.0));
+  return nebulaDensityShape(lum(baked));
+}
+
+float nebulaSpatialEdge (samplerCube map, vec3 dir, float scale) {
+  vec3 up = abs(dir.y) < 0.999 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+  vec3 t1 = normalize(cross(up, dir));
+  vec3 t2 = cross(dir, t1);
+  float eps = 0.0035 * max(scale, 0.25);
+  float d0 = nebulaCubemapDensity(map, dir, 0.0);
+  float d1 = nebulaCubemapDensity(map, normalize(dir + eps * t1), 0.0);
+  float d2 = nebulaCubemapDensity(map, normalize(dir + eps * t2), 0.0);
+  float g = length(vec2(d1 - d0, d2 - d0));
+  return g / (g + 0.065);
+}
+
+float nebulaUnsharpDetail (samplerCube map, vec3 dir) {
+  return nebulaCubemapDensity(map, dir, 0.0) - nebulaCubemapDensity(map, dir, 1.75);
+}
+
+/* Fine filament rims (highlight) and cavity lanes (occlude) from gradient + unsharp. */
+vec3 nebulaStructureEdges (
+    samplerCube envMap, vec3 dir, float density,
+    vec3 starColor, vec3 accentColor,
+    float edgeHighlight, float edgeOcclude, float edgeScale)
+{
+  if (edgeHighlight <= 1e-5 && edgeOcclude <= 1e-5) return vec3(0.0);
+
+  float spatial = nebulaSpatialEdge(envMap, dir, edgeScale);
+  float detail = nebulaUnsharpDetail(envMap, dir);
+  float edge = spatial * (0.6 + 0.4 * nebulaSoftBand(detail, -0.04, 0.12));
+
+  float hiBand = nebulaSoftBand(density, 0.14, 0.66);
+  float shadowBand = nebulaSoftBand(1.0 - density, 0.06, 0.55);
+
+  vec3 highlight = linear(accentColor) * edgeHighlight * edge * hiBand
+    * (0.55 + max(detail, 0.0) * 5.0);
+  vec3 occlude = linear(starColor) * edgeOcclude * edge * shadowBand * 0.4;
+  return highlight - occlude;
+}
+
 #endif
