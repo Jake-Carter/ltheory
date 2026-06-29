@@ -1,4 +1,4 @@
-Config.debug.instantJobs = true
+﻿Config.debug.instantJobs = true
 Config.debug.jobSpeed = 10000
 
 Config.debug.window = true
@@ -6,7 +6,7 @@ Config.debug.metrics = true
 Config.ui.showTrackers = false
 
 Config.render.vsync = false
-Config.run.ltheorySeed = 16527831391977940936
+-- Config.run.ltheorySeed = 16527831391977940936
 
 -- Config.gen.nBeltSize = function (rng) return 10000 end
 Config.gen.scalePlanet = 5e3
@@ -18,13 +18,13 @@ Config.gen.nThrusters = 2
 Config.gen.nStations = 2
 Config.gen.dustCloudSize = 256
 Config.gen.dustCloudOpacity = 0.5
-Config.gen.nDustClouds = 256
+Config.gen.nDustClouds = 0
 Config.gen.nDustFlecks = 512
 Config.gen.dustScatterIntensity = 3.0
 
 -- Config.gen.starfieldIntensity = 0.3
 -- Config.gen.starfieldBrightness = 0.2
-Config.gen.nebulaSkyIntensity = 1.0
+-- Config.gen.nebulaSkyIntensity = 1.0
 Config.gen.centralStarIntensity = 1.0
 -- Config.gen.nebulaGIIntensity = 0.1
 -- ConfigReload.gen.nebulaStarTint = 1.0

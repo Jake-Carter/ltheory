@@ -38,7 +38,7 @@ Gen/
 
 ## Nebula skybox export
 
-Runtime skybox effects (`nebulaStarTint`, `nebulaStarHighlight`, `nebulaStarRange`, `nebulaChromaVariance`, `centralStarIntensity`) are applied in [`skybox.glsl`](../../res/shader/fragment/skybox.glsl) via [`skybox_compose.glsl`](../../res/shader/include/skybox_compose.glsl) and [`nebulapalette.glsl`](../../res/shader/include/nebulapalette.glsl). Baked cubemaps store **density structure** (greyscale); star color is chosen at generation time and applied at compose.
+Runtime skybox effects (`nebulaStarTint`, `nebulaStarHighlight`, `nebulaStarRange`, `nebulaChromaVariance`, accent/grade knobs, `centralStarIntensity`) are applied in [`skybox.glsl`](../../res/shader/fragment/skybox.glsl) via [`skybox_compose.glsl`](../../res/shader/include/skybox_compose.glsl) and [`nebulapalette.glsl`](../../res/shader/include/nebulapalette.glsl). Baked cubemaps store **density structure** (greyscale); star and accent colors are chosen at generation time and applied at compose.
 
 ### Quick start
 
@@ -54,7 +54,7 @@ Output (default `./export/nebula/<seed>/`):
 | `*_baked_equirect.png` | Baked cubemap as 2:1 equirectangular |
 | `*_composed_px.png` … `*_composed_nz.png` | Composed sky (star tint/highlight/core) |
 | `*_composed_equirect.png` | **Primary inspection image** — what the player sees |
-| `meta.json` | Seed, starDir, starColor, config knobs |
+| `meta.json` | Seed, starDir, starColor, accentColor, config knobs |
 
 ### Config (`Config.run`)
 
@@ -65,7 +65,17 @@ Output (default `./export/nebula/<seed>/`):
 | `nebulaExportRes` | 512 | Composed cubemap bake resolution |
 | `nebulaExportSweep` | nil | List of override tables for parameter sweeps |
 
-Example sweep for `nebulaStarRange` in `Config.Local.lua`:
+Example sweep for accent strength in `Config.Local.lua`:
+
+```lua
+Config.run.nebulaExportSweep = {
+  { nebulaAccentStrength = 0.0 },
+  { nebulaAccentStrength = 0.35 },
+  { nebulaAccentStrength = 0.65 },
+}
+```
+
+Example sweep for `nebulaStarRange`:
 
 ```lua
 Config.run.nebulaExportSweep = {

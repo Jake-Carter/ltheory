@@ -50,6 +50,8 @@ local function dustLightingUniforms ()
   local sky = Config.gen.nebulaSkyIntensity or 1.0
   Shader.SetFloat('nebulaGIIntensity', (Config.gen.nebulaGIIntensity or 0.05) * sky)
   Shader.SetFloat('nebulaChromaVariance', Config.gen.nebulaChromaVariance or 0.2)
+  Shader.SetFloat('nebulaAccentStrength', Config.gen.nebulaAccentStrength or 0.4)
+  Shader.SetFloat('nebulaAccentShadow', Config.gen.nebulaAccentShadow or 0.35)
   Shader.SetFloat('scatterIntensity', Config.gen.dustScatterIntensity or 1.5)
 end
 

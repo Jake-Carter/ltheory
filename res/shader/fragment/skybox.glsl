@@ -7,6 +7,8 @@
 
 #autovar samplerCube envMap
 #autovar vec3 starDir
+#autovar vec3 starColor
+#autovar vec3 accentColor
 
 uniform float intensity;
 uniform float starIntensity;
@@ -14,14 +16,22 @@ uniform float nebulaStarTint;
 uniform float nebulaStarHighlight;
 uniform float nebulaStarRange;
 uniform float nebulaChromaVariance;
+uniform float nebulaAccentStrength;
+uniform float nebulaAccentShadow;
+uniform float nebulaAccentRim;
+uniform float nebulaGradeContrast;
+uniform float nebulaGradeSaturation;
+uniform float nebulaHighlightSaturation;
 
 void main() {
   vec3 V = normalize(vertPos);
   vec3 nebula = textureCube(envMap, V).xyz;
   vec3 c = composeSkybox(
-    V, nebula, starDir, starColor,
+    V, nebula, starDir, starColor, accentColor,
     intensity, starIntensity,
-    nebulaStarTint, nebulaStarHighlight, nebulaStarRange, nebulaChromaVariance);
+    nebulaStarTint, nebulaStarHighlight, nebulaStarRange, nebulaChromaVariance,
+    nebulaAccentStrength, nebulaAccentShadow, nebulaAccentRim,
+    nebulaGradeContrast, nebulaGradeSaturation, nebulaHighlightSaturation);
 
   gl_FragDepth = 1.0;
 

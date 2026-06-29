@@ -44,6 +44,12 @@ local function skyboxParams (overrides)
     nebulaStarHighlight = overrides.nebulaStarHighlight or Config.gen.nebulaStarHighlight or 0.6,
     nebulaStarRange     = overrides.nebulaStarRange or Config.gen.nebulaStarRange or 1.0,
     nebulaChromaVariance = overrides.nebulaChromaVariance or Config.gen.nebulaChromaVariance or 0.2,
+    nebulaAccentStrength = overrides.nebulaAccentStrength or Config.gen.nebulaAccentStrength or 0.4,
+    nebulaAccentShadow   = overrides.nebulaAccentShadow or Config.gen.nebulaAccentShadow or 0.35,
+    nebulaAccentRim      = overrides.nebulaAccentRim or Config.gen.nebulaAccentRim or 0.25,
+    nebulaGradeContrast  = overrides.nebulaGradeContrast or Config.gen.nebulaGradeContrast or 0.45,
+    nebulaGradeSaturation = overrides.nebulaGradeSaturation or Config.gen.nebulaGradeSaturation or 0.35,
+    nebulaHighlightSaturation = overrides.nebulaHighlightSaturation or Config.gen.nebulaHighlightSaturation or 0.5,
   }
 end
 
@@ -145,12 +151,19 @@ function NebulaExport.renderComposedCubemap (nebula, overrides)
   ss:setTexCube('envMap', nebula.envMap)
   ss:setFloat3('starDir', nebula.starDir.x, nebula.starDir.y, nebula.starDir.z)
   ss:setFloat3('starColor', nebula.starColor.x, nebula.starColor.y, nebula.starColor.z)
+  ss:setFloat3('accentColor', nebula.accentColor.x, nebula.accentColor.y, nebula.accentColor.z)
   ss:setFloat('intensity', p.intensity)
   ss:setFloat('starIntensity', p.starIntensity)
   ss:setFloat('nebulaStarTint', p.nebulaStarTint)
   ss:setFloat('nebulaStarHighlight', p.nebulaStarHighlight)
   ss:setFloat('nebulaStarRange', p.nebulaStarRange)
   ss:setFloat('nebulaChromaVariance', p.nebulaChromaVariance)
+  ss:setFloat('nebulaAccentStrength', p.nebulaAccentStrength)
+  ss:setFloat('nebulaAccentShadow', p.nebulaAccentShadow)
+  ss:setFloat('nebulaAccentRim', p.nebulaAccentRim)
+  ss:setFloat('nebulaGradeContrast', p.nebulaGradeContrast)
+  ss:setFloat('nebulaGradeSaturation', p.nebulaGradeSaturation)
+  ss:setFloat('nebulaHighlightSaturation', p.nebulaHighlightSaturation)
 
   tex:generate(ss)
   ss:free()
@@ -200,12 +213,23 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
       nebula.starColor.y,
       nebula.starColor.z,
     },
+    accentColor = {
+      nebula.accentColor.x,
+      nebula.accentColor.y,
+      nebula.accentColor.z,
+    },
     nebulaSkyIntensity = p.intensity,
     centralStarIntensity = p.starIntensity,
     nebulaStarTint = p.nebulaStarTint,
     nebulaStarHighlight = p.nebulaStarHighlight,
     nebulaStarRange = p.nebulaStarRange,
     nebulaChromaVariance = p.nebulaChromaVariance,
+    nebulaAccentStrength = p.nebulaAccentStrength,
+    nebulaAccentShadow = p.nebulaAccentShadow,
+    nebulaAccentRim = p.nebulaAccentRim,
+    nebulaGradeContrast = p.nebulaGradeContrast,
+    nebulaGradeSaturation = p.nebulaGradeSaturation,
+    nebulaHighlightSaturation = p.nebulaHighlightSaturation,
     overrides = overrides,
   }
   local metaPath = pathJoin(outDir, 'meta.json')

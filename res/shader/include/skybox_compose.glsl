@@ -10,18 +10,34 @@ vec3 composeSkybox (
     vec3 nebula,
     vec3 starDir,
     vec3 starColor,
+    vec3 accentColor,
     float intensity,
     float starIntensity,
     float nebulaStarTint,
     float nebulaStarHighlight,
     float nebulaStarRange,
-    float nebulaChromaVariance)
+    float nebulaChromaVariance,
+    float accentStrength,
+    float accentShadow,
+    float accentRim,
+    float gradeContrast,
+    float gradeSaturation,
+    float highlightSaturation)
 {
-  float density = nebulaDensity(nebula);
+  float rawD = lum(max(linear(nebula), vec3(0.0)));
+  float density = gradeNebulaDensity(rawD, gradeContrast);
   float scatter = nebulaStarAngularWeight(dir, starDir, nebulaStarRange, 1.5);
-  vec3 c = nebulaStarPalette(nebula, starColor, nebulaChromaVariance);
-  c += nebulaAmbientHaze(nebula, starColor, kNebulaAmbientHaze);
-  c = enrichNebulaPalette(c, density, nebulaStarTint);
+  float accentSide = (1.0 - scatter) * accentStrength;
+
+  vec3 c = nebulaDualPalette(
+    nebula, starColor, accentColor, density, nebulaChromaVariance, accentStrength);
+  c += nebulaAmbientHazeAccent(
+    nebula, accentColor, kNebulaAmbientHaze * (1.0 + accentSide * 0.45), accentShadow);
+  c += nebulaShadowAccent(nebula, accentColor, accentShadow * (0.45 + accentSide * 0.55));
+  c += nebulaFilamentRim(nebula, accentColor, density, accentRim);
+
+  c = gradeNebulaPalette(
+    c, density, accentColor, nebulaStarTint, gradeSaturation, highlightSaturation);
   c *= intensity;
   c += nebulaStarScatterHighlight(nebula, starColor, scatter, nebulaStarHighlight) * intensity;
   c += centralStarGlow(dir, starDir, starColor) * starIntensity;

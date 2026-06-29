@@ -17,7 +17,7 @@ const float kSamples    = 128.00;
 const int kIterations   = 30;
 
 const float kBrightConstant = 0.075;
-const float kBrightCell     = 0.100;
+const float kBrightCell     = 0.118;
 
 /* Thanks Kali! :) Kaliset 4D extension with noise injection & warping. */
 float magic(vec3 p) {

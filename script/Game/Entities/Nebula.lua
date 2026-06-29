@@ -2,7 +2,17 @@ local Nebula = class(function (self, seed, starDir)
   self.seed = seed
   self.starDir = starDir
   self.starColor = Vec3f(1.0, 0.85, 0.65)
+  self.accentColor = Vec3f(0.55, 0.75, 1.0)
 end)
+
+local function nebulaComposeUniforms ()
+  Shader.SetFloat('nebulaAccentStrength', Config.gen.nebulaAccentStrength or 0.4)
+  Shader.SetFloat('nebulaAccentShadow', Config.gen.nebulaAccentShadow or 0.35)
+  Shader.SetFloat('nebulaAccentRim', Config.gen.nebulaAccentRim or 0.25)
+  Shader.SetFloat('nebulaGradeContrast', Config.gen.nebulaGradeContrast or 0.45)
+  Shader.SetFloat('nebulaGradeSaturation', Config.gen.nebulaGradeSaturation or 0.35)
+  Shader.SetFloat('nebulaHighlightSaturation', Config.gen.nebulaHighlightSaturation or 0.5)
+end
 
 function Nebula:forceLoad ()
   if self.envMap then return end
@@ -10,7 +20,14 @@ function Nebula:forceLoad ()
   local gen = Gen.Generator.Get('Nebula', rng)
   local envMap, sr, sg, sb = gen(rng, Config.gen.nebulaRes, self.starDir)
   self.envMap = envMap:managed()
-  if sr then self.starColor = Vec3f(sr, sg, sb) end
+  if sr then
+    self.starColor = Vec3f(sr, sg, sb)
+    local star = Color(sr, sg, sb)
+    local hueOffset = Config.gen.nebulaAccentHueOffset or 0.5
+    local NebulaPalette = require('Gen.NebulaPalette')
+    local accent = NebulaPalette.pickAccentColor(rng, star, hueOffset)
+    self.accentColor = accent:toVec3()
+  end
   self.irMap = self.envMap:genIRMap(256):managed()
   self.stars = Gen.Starfield(rng, Config.gen.nStars(rng)):managed()
 end
@@ -28,7 +45,7 @@ function Nebula:render (state)
     Shader.SetFloat('nebulaStarHighlight', Config.gen.nebulaStarHighlight or 0.6)
     Shader.SetFloat('nebulaStarRange', Config.gen.nebulaStarRange or 1.0)
     Shader.SetFloat('nebulaChromaVariance', Config.gen.nebulaChromaVariance or 0.2)
-    Shader.SetFloat3('starColor', self.starColor.x, self.starColor.y, self.starColor.z)
+    nebulaComposeUniforms()
     Draw.Box3(Box3f(-1, -1, -1, 1, 1, 1))
     shader:stop()
     CullFace.Pop()

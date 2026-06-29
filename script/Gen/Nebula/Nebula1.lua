@@ -15,7 +15,7 @@ local function generateNebulaIFS (rng, res, starDir)
   local seed = rng:getUniformRange(1, 1000)
   ss:setFloat('seed', seed)
 
-  local lutDensity = Gen.DensityLUT(rng, 5, 0.30, 0.6)
+  local lutDensity = Gen.DensityLUT(rng, 5, 0.38, 0.6)
   ss:setTex1D('lutDensity', lutDensity)
 
   self:generate(ss)

@@ -74,9 +74,16 @@ Config.gen = {
   nebulaStarHighlight  = 0.85,  -- star-lit scatter on nebula density (skybox)
   nebulaStarRange      = 1.0,  -- sky coverage for tint/highlight; 1 = full skybox, <1 = tighter toward star
   nebulaChromaVariance = 0.2,  -- subtle accent variance from baked density structure (0 = pure star palette)
+  nebulaAccentHueOffset = 0.5,  -- HSL rotation from star to accent (0.5 = complement)
+  nebulaAccentStrength  = 0.4,  -- mix accent into mid/shadow regions
+  nebulaAccentShadow    = 0.35, -- accent in low-density shadow lanes
+  nebulaAccentRim       = 0.25, -- split-complement rim on filaments
+  nebulaGradeContrast   = 0.45, -- filament vs haze density separation
+  nebulaGradeSaturation = 0.35, -- global saturation lift (compose)
+  nebulaHighlightSaturation = 0.5, -- extra saturation in bright filaments
 
   shipRes     = 8,
-  nebulaRes   = 1024,
+  nebulaRes   = 2048,
 
   scalePlanet = 2000,
   playerShipSize = 4,

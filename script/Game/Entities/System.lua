@@ -37,8 +37,10 @@ end
 function System:beginRender ()
   self.nebula:forceLoad()
   local c = self.nebula.starColor
+  local a = self.nebula.accentColor
   ShaderVar.PushFloat3('starDir', self.starDir.x, self.starDir.y, self.starDir.z)
   ShaderVar.PushFloat3('starColor', c.x, c.y, c.z)
+  ShaderVar.PushFloat3('accentColor', a.x, a.y, a.z)
   ShaderVar.PushTexCube('envMap', self.nebula.envMap)
   ShaderVar.PushTexCube('irMap', self.nebula.irMap)
 end
@@ -53,6 +55,7 @@ end
 function System:endRender ()
   ShaderVar.Pop('starDir')
   ShaderVar.Pop('starColor')
+  ShaderVar.Pop('accentColor')
   ShaderVar.Pop('envMap')
   ShaderVar.Pop('irMap')
 end

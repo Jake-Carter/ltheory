@@ -19,7 +19,7 @@ vec4 generate(vec3 dir) {
   float absScale = 2.32 * pow4(1.0 / max(0.35, lum(linear(color))));
   float density = k * exp(-k * absScale);
   float kd = abs((k - k2) - 0.05);
-  density *= 2.0 - exp(-4.0 * kd * absScale);
+  density *= 2.0 - exp(-5.5 * kd * absScale);
   density = min(1.0, 1.0 - exp(-3.0 * density));
 
   return vec4(vec3(density), density);

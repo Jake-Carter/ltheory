@@ -14,6 +14,7 @@ uniform samplerCube envMap;
 uniform samplerCube irMap;
 uniform vec3 starColor;
 uniform vec3 starDir;
+uniform vec3 accentColor;
 
 #define FRAGMENT_CORRECT_DEPTH                                                 \
   gl_FragDepth = log2(flogz) * (0.5 * Fcoef);
