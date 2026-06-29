@@ -1,3 +1,5 @@
+local GenUtil = require('Gen.GenUtil')
+
 local Dust = class(function (self, seed)
   self.seed = seed or 0
 end)
@@ -45,9 +47,12 @@ end
 local mIdentity = Matrix.Identity()
 local texDust
 
-local function dustLightingUniforms ()
-  Shader.SetFloat('starIntensity', Config.gen.centralStarIntensity or 1.0)
-  local sky = Config.gen.nebulaSkyIntensity or 1.0
+local function dustLightingUniforms (self)
+  local star = self.centralStarIntensity
+    or GenUtil.pickScalar(Config.gen.centralStarIntensity, nil, 0.5)
+  local sky = self.nebulaSkyIntensity
+    or GenUtil.pickScalar(Config.gen.nebulaSkyIntensity, nil, 0.18)
+  Shader.SetFloat('starIntensity', star)
   Shader.SetFloat('nebulaGIIntensity', (Config.gen.nebulaGIIntensity or 0.05) * sky)
   Shader.SetFloat('nebulaChromaVariance', Config.gen.nebulaChromaVariance or 0.2)
   Shader.SetFloat('nebulaAccentStrength', Config.gen.nebulaAccentStrength or 0.4)
@@ -79,7 +84,7 @@ function Dust:render (state)
     local up = cam.rot:getUp()
     local size = self.cloudSize
     shader:start()
-    dustLightingUniforms()
+    dustLightingUniforms(self)
     Shader.SetFloat3('axis', up.x, up.y, up.z)
     Shader.SetFloat2('size', size, size)
     Shader.SetMatrix('mWorld', mIdentity)
@@ -103,7 +108,7 @@ function Dust:render (state)
         local vn = vel:normalize()
         local shader = Cache.Shader('billboard/wrapped', 'effect/dustfleck')
         shader:start()
-        dustLightingUniforms()
+        dustLightingUniforms(self)
         Shader.SetMatrix('mWorld', mIdentity)
         Shader.SetFloat2('size', 2.0, 0.1 * min(1000.0, vl))
         Shader.SetFloat3('axis', vn.x, vn.y, vn.z)

@@ -5,6 +5,24 @@ local Nebula = class(function (self, seed, starDir)
   self.accentColor = Vec3f(0.55, 0.75, 1.0)
 end)
 
+local function nebulaLightingScalars (self)
+  local sky = self.skyIntensity
+  local star = self.starIntensity
+  if not sky or not star then
+    local GenUtil = require('Gen.GenUtil')
+    local rng = RNG.Create(self.seed + 0x51A7EULL):managed()
+    if not sky then
+      sky = GenUtil.pickScalar(Config.gen.nebulaSkyIntensity, rng, 0.18)
+      self.skyIntensity = sky
+    end
+    if not star then
+      star = GenUtil.pickScalar(Config.gen.centralStarIntensity, rng, 0.5)
+      self.starIntensity = star
+    end
+  end
+  return sky, star
+end
+
 local function nebulaComposeUniforms ()
   Shader.SetFloat('nebulaAccentStrength', Config.gen.nebulaAccentStrength or 0.4)
   Shader.SetFloat('nebulaAccentShadow', Config.gen.nebulaAccentShadow or 0.35)
@@ -30,6 +48,7 @@ function Nebula:forceLoad ()
   end
   self.irMap = self.envMap:genIRMap(256):managed()
   self.stars = Gen.Starfield(rng, Config.gen.nStars(rng)):managed()
+  nebulaLightingScalars(self)
 end
 
 function Nebula:render (state)
@@ -39,8 +58,9 @@ function Nebula:render (state)
     local shader = Cache.Shader('farplane', 'skybox')
     CullFace.Push(CullFace.None)
     shader:start()
-    Shader.SetFloat('intensity', Config.gen.nebulaSkyIntensity or 1.0)
-    Shader.SetFloat('starIntensity', Config.gen.centralStarIntensity or 1.0)
+    local sky, star = nebulaLightingScalars(self)
+    Shader.SetFloat('intensity', sky)
+    Shader.SetFloat('starIntensity', star)
     Shader.SetFloat('nebulaStarTint', Config.gen.nebulaStarTint or 0.4)
     Shader.SetFloat('nebulaStarHighlight', Config.gen.nebulaStarHighlight or 0.6)
     Shader.SetFloat('nebulaStarRange', Config.gen.nebulaStarRange or 1.0)

@@ -1,4 +1,5 @@
 local NebulaExport = {}
+local GenUtil = require('Gen.GenUtil')
 
 local function seedPathLabel (seed)
   local s = tostring(seed)
@@ -35,11 +36,19 @@ local function ensureDir (path)
   end
 end
 
-local function skyboxParams (overrides)
+local function skyboxParams (overrides, nebula)
   overrides = overrides or {}
+  local sky = overrides.nebulaSkyIntensity
+  if not sky and nebula and nebula.skyIntensity then sky = nebula.skyIntensity end
+  if not sky then sky = GenUtil.pickScalar(Config.gen.nebulaSkyIntensity, nil, 0.18) end
+
+  local star = overrides.centralStarIntensity
+  if not star and nebula and nebula.starIntensity then star = nebula.starIntensity end
+  if not star then star = GenUtil.pickScalar(Config.gen.centralStarIntensity, nil, 0.5) end
+
   return {
-    intensity           = overrides.nebulaSkyIntensity or Config.gen.nebulaSkyIntensity or 1.0,
-    starIntensity       = overrides.centralStarIntensity or Config.gen.centralStarIntensity or 1.0,
+    intensity           = sky,
+    starIntensity       = star,
     nebulaStarTint      = overrides.nebulaStarTint or Config.gen.nebulaStarTint or 0.4,
     nebulaStarHighlight = overrides.nebulaStarHighlight or Config.gen.nebulaStarHighlight or 0.6,
     nebulaStarRange     = overrides.nebulaStarRange or Config.gen.nebulaStarRange or 1.0,
@@ -142,7 +151,7 @@ function NebulaExport.exportBaked (envMap, outDir, name)
 end
 
 function NebulaExport.renderComposedCubemap (nebula, overrides)
-  local p = skyboxParams(overrides)
+  local p = skyboxParams(overrides, nebula)
   local res = (Config.run and Config.run.nebulaExportRes) or 512
   local tex = TexCube.Create(res, TexFormat.RGBA16F)
   local shader = Cache.Shader('ui', 'gen/skybox_compose')
@@ -198,7 +207,7 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
   printf('NebulaExport: composed faces <%s_*.png>', composedPrefix)
   printf('NebulaExport: composed equirect <%s>', composedEqui)
 
-  local p = skyboxParams(overrides)
+  local p = skyboxParams(overrides, nebula)
   local meta = {
     seed = tostring(seed),
     nebulaRes = nebula.envMap:getSize(),

@@ -43,8 +43,9 @@ function GameView:draw (focus, active)
       Draw.Clear(0, 0, 0, 0)
       local shader = Cache.Shader('worldray', 'light/global')
       shader:start()
-      Shader.SetFloat('starIntensity', Config.gen.centralStarIntensity or 1.0)
-      local sky = Config.gen.nebulaSkyIntensity or 1.0
+      local sky = world.nebulaSkyIntensity or 0.18
+      local starInt = world.centralStarIntensity or 0.5
+      Shader.SetFloat('starIntensity', starInt)
       local gi = (Config.gen.nebulaGIIntensity or 0.05) * sky
       Shader.SetFloat('nebulaGIIntensity', gi)
       Shader.SetTex2D('texDepth', self.renderer.zBufferL)

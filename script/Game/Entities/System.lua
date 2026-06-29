@@ -1,6 +1,7 @@
 local Entity = require('Game.Entity')
 local Dust = require('Game.Entities.Dust')
 local Nebula = require('Game.Entities.Nebula')
+local GenUtil = require('Gen.GenUtil')
 require('Game.Content')
 
 local System = subclass(Entity, function (self, seed)
@@ -19,8 +20,18 @@ local System = subclass(Entity, function (self, seed)
   self.physics = Physics.Create():managed()
   local starAngle = self.rng:getDir2()
   self.starDir = Vec3f(starAngle.x, 0, starAngle.y)
+
+  self.nebulaSkyIntensity = GenUtil.pickScalar(
+    Config.gen.nebulaSkyIntensity, self.rng, 0.18)
+  self.centralStarIntensity = GenUtil.pickScalar(
+    Config.gen.centralStarIntensity, self.rng, 0.5)
+
   self.nebula = Nebula(self.rng:get64(), self.starDir)
+  self.nebula.skyIntensity = self.nebulaSkyIntensity
+  self.nebula.starIntensity = self.centralStarIntensity
   self.dust = Dust(seed)
+  self.dust.nebulaSkyIntensity = self.nebulaSkyIntensity
+  self.dust.centralStarIntensity = self.centralStarIntensity
 
   self.players = {}
   self.zones = {}

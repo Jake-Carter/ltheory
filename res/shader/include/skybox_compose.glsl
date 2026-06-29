@@ -27,14 +27,13 @@ vec3 composeSkybox (
   float rawD = lum(max(linear(nebula), vec3(0.0)));
   float density = gradeNebulaDensity(rawD, gradeContrast);
   float scatter = nebulaStarAngularWeight(dir, starDir, nebulaStarRange, 1.5);
-  float accentSide = (1.0 - scatter) * accentStrength;
+  float accentSide = nebulaSoftBand(1.0 - scatter, 0.15, 0.95) * accentStrength;
 
   vec3 c = nebulaDualPalette(
     nebula, starColor, accentColor, density, nebulaChromaVariance, accentStrength);
-  c += nebulaAmbientHazeAccent(
-    nebula, accentColor, kNebulaAmbientHaze * (1.0 + accentSide * 0.45), accentShadow);
-  c += nebulaShadowAccent(nebula, accentColor, accentShadow * (0.45 + accentSide * 0.55));
-  c += nebulaFilamentRim(nebula, accentColor, density, accentRim);
+  c += nebulaAccentVeil(
+    accentColor, density, kNebulaAmbientHaze + accentShadow * 0.55, accentSide);
+  c += nebulaFilamentRim(accentColor, density, accentRim);
 
   c = gradeNebulaPalette(
     c, density, accentColor, nebulaStarTint, gradeSaturation, highlightSaturation);

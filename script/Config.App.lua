@@ -67,9 +67,9 @@ Config.gen = {
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
   starfieldBrightness = 0.2,   -- proc-gen star vertex color scale
   starfieldIntensity  = 0.3,   -- runtime star billboard glow (starbg shader)
-  nebulaSkyIntensity  = 0.55,  -- nebula cubemap brightness (skybox shader)
+  nebulaSkyIntensity  = function (rng) return 0.18 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system sky brightness (~0.144–0.216, ±20% of 0.18)
   nebulaGIIntensity   = 0.1,   -- nebula fill on surfaces at full sky brightness; effective = this × nebulaSkyIntensity
-  centralStarIntensity = 1.0,  -- central star brightness (skybox + surface GI)
+  centralStarIntensity = function (rng) return 0.5 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system central star (~0.4–0.6, ±20% of 0.5)
   nebulaStarTint       = 0.55,  -- saturation/brightness richness on star-anchored palette (skybox)
   nebulaStarHighlight  = 0.85,  -- star-lit scatter on nebula density (skybox)
   nebulaStarRange      = 1.0,  -- sky coverage for tint/highlight; 1 = full skybox, <1 = tighter toward star

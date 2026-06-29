@@ -88,5 +88,11 @@ function GenUtil.ShaderToTexCube (res, fmt, fragShader, args)
   return self
 end
 
+-- Resolve Config.gen scalar or rng function (number | function(rng) -> number).
+function GenUtil.pickScalar (v, rng, default)
+  if type(v) == 'function' then return v(rng) end
+  if type(v) == 'number' then return v end
+  return default
+end
 
 return GenUtil

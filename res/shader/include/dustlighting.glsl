@@ -27,7 +27,7 @@ vec3 nebulaPaletteSample (
   float density = nebulaDensity(baked);
   vec3 c = nebulaDualPalette(
     baked, starColor, accentColor, density, chromaVariance, accentStrength);
-  c += nebulaAmbientHazeAccent(baked, accentColor, 0.12, accentShadow);
+  c += nebulaAccentVeil(accentColor, density, 0.12 + accentShadow * 0.35, accentStrength);
   return c;
 }
 
