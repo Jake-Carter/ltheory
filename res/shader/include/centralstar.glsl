@@ -23,25 +23,3 @@ float nebulaStarAngularWeight (vec3 dir, vec3 towardStar, float range, float pow
   float coverage = saturate(r);
   return mix(tight, 1.0, coverage);
 }
-
-/* Broad star-lit emission on nebula gas (wider falloff than centralStarGlow). */
-vec3 nebulaStarIllumination (
-    vec3 dir, vec3 towardStar, vec3 starColor, vec3 nebula, float intensity, float range)
-{
-  float scatter = nebulaStarAngularWeight(dir, towardStar, range, 1.5);
-  /* Multiply into nebula color so edges follow gas density, not a hard lum mask. */
-  vec3 n = max(linear(nebula), vec3(0.0));
-  return linear(starColor) * scatter * n * intensity;
-}
-
-/* Pull nebula chroma toward the star near starDir for color harmony. */
-vec3 harmonizeNebulaWithStar (
-    vec3 nebula, vec3 dir, vec3 towardStar, vec3 starColor, float amount, float range)
-{
-  float w = amount * nebulaStarAngularWeight(dir, towardStar, range, 1.25);
-  vec3 n = linear(nebula);
-  vec3 tint = linear(starColor);
-  float tl = max(1e-4, avg(tint));
-  vec3 harmonized = n * (tint / tl);
-  return mix(n, harmonized, saturate(w));
-}

@@ -25,6 +25,8 @@ Gen/
 ├── MeshUtil.lua          # Mesh manipulation helpers
 ├── DiffuseMap.lua        # Diffuse texture generation
 ├── ColorLUT.lua          # Color lookup tables
+├── DensityLUT.lua        # Greyscale LUT for nebula density structure
+├── NebulaPalette.lua     # Shared star color / emission palette for nebula gens
 ├── UVMap.lua             # UV mapping utilities
 ├── Boxes.lua             # Box layout utilities
 ├── Sandbox.lua           # Generation sandbox/experiments
@@ -36,7 +38,7 @@ Gen/
 
 ## Nebula skybox export
 
-Runtime skybox effects (`nebulaStarTint`, `nebulaStarHighlight`, `nebulaStarRange`, `centralStarIntensity`) are applied in [`skybox.glsl`](../../res/shader/fragment/skybox.glsl) via [`skybox_compose.glsl`](../../res/shader/include/skybox_compose.glsl), not in the baked cubemap. Use **`Gen/NebulaExport.lua`** to export images for shader tuning and visual diffing.
+Runtime skybox effects (`nebulaStarTint`, `nebulaStarHighlight`, `nebulaStarRange`, `nebulaChromaVariance`, `centralStarIntensity`) are applied in [`skybox.glsl`](../../res/shader/fragment/skybox.glsl) via [`skybox_compose.glsl`](../../res/shader/include/skybox_compose.glsl) and [`nebulapalette.glsl`](../../res/shader/include/nebulapalette.glsl). Baked cubemaps store **density structure** (greyscale); star color is chosen at generation time and applied at compose.
 
 ### Quick start
 
@@ -193,9 +195,10 @@ Generation parameters in `Config.gen` (`Config.App.lua`):
 | `nStars` | fn | Star count (function of RNG) |
 | `shipRes` | 8 | Ship mesh resolution |
 | `nebulaRes` | 1024 | Nebula texture resolution |
-| `nebulaStarTint` | 0.4 | Pull nebula hue toward star (skybox) |
-| `nebulaStarHighlight` | 0.6 | Star-lit glow on nebula gas (skybox) |
+| `nebulaStarTint` | 0.4 | Saturation/brightness richness on star-anchored palette (skybox) |
+| `nebulaStarHighlight` | 0.6 | Star scatter emission on nebula density (skybox) |
 | `nebulaStarRange` | 1.0 | Sky coverage for tint/highlight; 1 = full skybox, &lt;1 = tighter toward star |
+| `nebulaChromaVariance` | 0.2 | Accent variance from baked density (0 = pure star palette) |
 | `scalePlanet` | 2000 | Planet size scale |
 | `playerShipSize` | 4 | Player ship scale |
 

@@ -13,6 +13,7 @@ uniform float starIntensity;
 uniform float nebulaStarTint;
 uniform float nebulaStarHighlight;
 uniform float nebulaStarRange;
+uniform float nebulaChromaVariance;
 
 void main() {
   vec3 V = normalize(vertPos);
@@ -20,7 +21,7 @@ void main() {
   vec3 c = composeSkybox(
     V, nebula, starDir, starColor,
     intensity, starIntensity,
-    nebulaStarTint, nebulaStarHighlight, nebulaStarRange);
+    nebulaStarTint, nebulaStarHighlight, nebulaStarRange, nebulaChromaVariance);
 
   gl_FragDepth = 1.0;
 

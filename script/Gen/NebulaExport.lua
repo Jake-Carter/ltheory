@@ -43,6 +43,7 @@ local function skyboxParams (overrides)
     nebulaStarTint      = overrides.nebulaStarTint or Config.gen.nebulaStarTint or 0.4,
     nebulaStarHighlight = overrides.nebulaStarHighlight or Config.gen.nebulaStarHighlight or 0.6,
     nebulaStarRange     = overrides.nebulaStarRange or Config.gen.nebulaStarRange or 1.0,
+    nebulaChromaVariance = overrides.nebulaChromaVariance or Config.gen.nebulaChromaVariance or 0.2,
   }
 end
 
@@ -149,6 +150,7 @@ function NebulaExport.renderComposedCubemap (nebula, overrides)
   ss:setFloat('nebulaStarTint', p.nebulaStarTint)
   ss:setFloat('nebulaStarHighlight', p.nebulaStarHighlight)
   ss:setFloat('nebulaStarRange', p.nebulaStarRange)
+  ss:setFloat('nebulaChromaVariance', p.nebulaChromaVariance)
 
   tex:generate(ss)
   ss:free()
@@ -203,6 +205,7 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
     nebulaStarTint = p.nebulaStarTint,
     nebulaStarHighlight = p.nebulaStarHighlight,
     nebulaStarRange = p.nebulaStarRange,
+    nebulaChromaVariance = p.nebulaChromaVariance,
     overrides = overrides,
   }
   local metaPath = pathJoin(outDir, 'meta.json')

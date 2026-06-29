@@ -8,6 +8,7 @@ uniform float starIntensity;
 uniform float nebulaStarTint;
 uniform float nebulaStarHighlight;
 uniform float nebulaStarRange;
+uniform float nebulaChromaVariance;
 
 void main() {
   vec3 dir = cubeMapDir(uv);
@@ -15,6 +16,6 @@ void main() {
   vec3 c = composeSkybox(
     dir, nebula, starDir, starColor,
     intensity, starIntensity,
-    nebulaStarTint, nebulaStarHighlight, nebulaStarRange);
+    nebulaStarTint, nebulaStarHighlight, nebulaStarRange, nebulaChromaVariance);
   gl_FragColor = vec4(c, 1.0);
 }

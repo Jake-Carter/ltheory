@@ -18,16 +18,16 @@ Config.gen.nThrusters = 2
 Config.gen.nStations = 2
 Config.gen.dustCloudSize = 256
 Config.gen.dustCloudOpacity = 0.5
-Config.gen.nDustClouds = 1
+Config.gen.nDustClouds = 1024
 
 -- Config.gen.starfieldIntensity = 0.3
 -- Config.gen.starfieldBrightness = 0.2
-Config.gen.nebulaSkyIntensity = 1.0
-Config.gen.centralStarIntensity = 1.0
+-- Config.gen.nebulaSkyIntensity = 1.0
+-- Config.gen.centralStarIntensity = 1.0
 -- Config.gen.nebulaGIIntensity = 0.1
-Config.gen.nebulaStarTint = 1.0
-Config.gen.nebulaStarHighlight = 1.0
-Config.gen.nebulaStarRange = 1.0
+-- ConfigReload.gen.nebulaStarTint = 1.0
+-- Config.gen.nebulaStarHighlight = 1.0
+-- Config.gen.nebulaStarRange = 1.0
 
 if false then
   Config.jit.loom = true

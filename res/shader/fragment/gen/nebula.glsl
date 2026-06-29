@@ -8,10 +8,7 @@
 
 #define ENABLE_HORIZON 0
 
-uniform vec3 color;
-uniform sampler1D lutR;
-uniform sampler1D lutG;
-uniform sampler1D lutB;
+uniform sampler1D lutDensity;
 uniform float roughness;
 uniform float seed;
 
@@ -58,7 +55,7 @@ vec4 generate(vec3 dir) {
   /* Central star is applied at runtime in skybox.glsl. */
 
   /* Absorption. */ {
-    vec3 cEmit = color;
+    vec3 cEmit = vec3(1.0);
     dir *= kScale;
     #if ENABLE_HORIZON
       dir *= stretch;
@@ -67,15 +64,12 @@ vec4 generate(vec3 dir) {
       vec3 p = dir * i * w;
       float t = magic(p);
       t = exp(-t * t);
-      vec3 wave = vec3(
-        texture1D(lutR, t).x,
-        texture1D(lutG, t).x,
-        texture1D(lutB, t).x);
+      float wave = texture1D(lutDensity, t).x;
       wave *= sqrt(wave);
 
       const float k = 6.0;
       const float q = 1.2;
-      vec3 vs = exp(-q * wave * t);
+      vec3 vs = exp(-q * wave * vec3(t));
       vs -= 1.25 *         exp(-pow( 8.0 * abs(t - 0.90), 0.75));
       vs += 0.50 * cEmit * exp(-pow(10.0 * abs(t - 0.90), 0.50));
       c *= exp(-k * w * vs);
@@ -97,7 +91,9 @@ vec4 generate(vec3 dir) {
   }
   #endif
 
-  return vec4(c, opacity);
+  float raw = max(lum(c), max(max(c.r, c.g), c.b));
+  float density = min(1.0, 1.0 - exp(-3.0 * raw));
+  return vec4(vec3(density), opacity);
 }
 
 void main() {

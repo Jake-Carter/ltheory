@@ -1,5 +1,6 @@
 local Generator = require('Gen.Generator')
 local GenUtil   = require('Gen.GenUtil')
+local NebulaPalette = require('Gen.NebulaPalette')
 
 local function generateNebulaLightTransport (rng, res, starDir)
   Profiler.Begin('Nebula.Generate.LightTransport')
@@ -11,6 +12,8 @@ local function generateNebulaLightTransport (rng, res, starDir)
   buffSrc:setMinFilter(TexFilter.Linear)
   buffSrc:clear(0.05, 0.05, 0.05, 0)
 
+  local starColor = NebulaPalette.pickStarColor(rng)
+
   local emit   = Cache.Shader('ui', 'gen/nebula_emit')
   local absorb = Cache.Shader('ui', 'gen/nebula_absorb')
 
@@ -18,14 +21,9 @@ local function generateNebulaLightTransport (rng, res, starDir)
     for j = 1, rng:getInt(4, 8) do -- Emission
       local ss = ShaderState.Create(emit)
       local rot = rng:getQuat()
-      local dir = rng:getDir3()
-      -- ss:setFloat('seed', rng:getUniform())
-      local T = rng:getUniform()
-      local K = Math.Lerp(1600.0, 15000.0, T)
-      local C = Color.FromTemperature(K, 2.5):toVec3():normalize():scale(1.0 + rng:getExp())
+      local C = NebulaPalette.emissionColor(rng, starColor)
       ss:setFloat3('color', C.x, C.y, C.z)
       ss:setFloat4('rot', rot.x, rot.y, rot.z, rot.w)
-      -- ss:setFloat3('starDir', starDir.x, starDir.y, starDir.z)
       ss:setTexCube('src', buffSrc)
       buffDst:generate(ss)
       ss:free()
@@ -49,7 +47,6 @@ local function generateNebulaLightTransport (rng, res, starDir)
   buffSrc:setMinFilter(TexFilter.LinearMipLinear)
   buffSrc:genMipmap()
   Profiler.End()
-  local starColor = Color.FromTemperature(6500, 2.0)
   return buffSrc, starColor.r, starColor.g, starColor.b
 end
 
