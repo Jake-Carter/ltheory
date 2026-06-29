@@ -44,9 +44,9 @@ void main() {
     nebulaHeatGlow, nebulaHeatSaturation, nebulaHeatStarBias, nebulaHeatHue,
     nebulaHeatVariation);
 
-  gl_FragDepth = 1.0;
+  setAlbedo(linear(c));
 
-  setAlbedo(linear(c.xyz));
+  gl_FragDepth = 1.0;
   setAlpha(1.0);
   setDepth();
   setNormal(-normalize(vertPos));

@@ -46,16 +46,21 @@ vec3 composeSkybox (
 
   c = gradeNebulaPalette(
     c, density, accentColor, nebulaStarTint, gradeSaturation, highlightSaturation);
-  c += nebulaStructureEdges(
+  vec3 edgeHi;
+  float edgeOcc;
+  nebulaStructureEdges(
     envMap, dir, density, starColor, accentColor,
-    edgeHighlight, edgeOcclude, edgeScale);
+    edgeHighlight, edgeOcclude, edgeScale, edgeHi, edgeOcc);
+  c += edgeHi;
+  c *= 1.0 - edgeOcc;
+  c = max(c, vec3(0.0));
   c *= intensity;
   c += nebulaStarScatterHighlight(nebula, starColor, scatter, nebulaStarHighlight) * intensity;
   c += nebulaIonizedEdgeGlow(
     envMap, dir, nebula, density, starDir, starColor, accentColor,
     heatGlow, heatSaturation, heatStarBias, heatHue, edgeScale, heatVariation);
   c += centralStarGlow(dir, starDir, starColor) * starIntensity;
-  return c;
+  return nebulaSanitizeColor(c);
 }
 
 #endif
