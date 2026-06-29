@@ -31,8 +31,57 @@ Gen/
 ├── ShapeLib/             (12) Procedural mesh building blocks
 ├── ShipLib/              (4)  Ship part generators
 ├── System/               (2)  System-level generators
-└── Nebula/               (2)  Nebula generators
+└── Nebula/               (3)  Nebula generators
 ```
+
+## Nebula skybox export
+
+Runtime skybox effects (`nebulaStarTint`, `nebulaStarHighlight`, `nebulaStarRange`, `centralStarIntensity`) are applied in [`skybox.glsl`](../../res/shader/fragment/skybox.glsl) via [`skybox_compose.glsl`](../../res/shader/include/skybox_compose.glsl), not in the baked cubemap. Use **`Gen/NebulaExport.lua`** to export images for shader tuning and visual diffing.
+
+### Quick start
+
+```bash
+bin/lt64.exe NebulaExportTest --frames 1
+```
+
+Output (default `./export/nebula/<seed>/`):
+
+| File | Contents |
+|------|----------|
+| `*_baked_px.png` … `*_baked_nz.png` | Raw proc-gen cubemap faces |
+| `*_baked_equirect.png` | Baked cubemap as 2:1 equirectangular |
+| `*_composed_px.png` … `*_composed_nz.png` | Composed sky (star tint/highlight/core) |
+| `*_composed_equirect.png` | **Primary inspection image** — what the player sees |
+| `meta.json` | Seed, starDir, starColor, config knobs |
+
+### Config (`Config.run`)
+
+| Parameter | Default | Purpose |
+|-----------|---------|---------|
+| `nebulaExportDir` | `./export/nebula/` | Output root directory |
+| `nebulaExportSeed` | nil | Fixed seed (falls back to `ltheorySeed`) |
+| `nebulaExportRes` | 512 | Composed cubemap bake resolution |
+| `nebulaExportSweep` | nil | List of override tables for parameter sweeps |
+
+Example sweep for `nebulaStarRange` in `Config.Local.lua`:
+
+```lua
+Config.run.nebulaExportSweep = {
+  { nebulaStarRange = 0.5 },
+  { nebulaStarRange = 1.0 },
+  { nebulaStarRange = 2.0 },
+  { nebulaStarRange = 4.0 },
+}
+```
+
+Each sweep writes `*_composed_nebulaStarRange_N_equirect.png` and `meta_nebulaStarRange_N.json`.
+
+### Workflow
+
+1. Change skybox / `centralstar.glsl` / `skybox_compose.glsl`
+2. Run `NebulaExportTest --frames 1`
+3. Compare `*_composed_equirect.png` vs `*_baked_equirect.png` to separate bake-time vs runtime effects
+4. Use sweeps to validate uniform wiring vs shader math
 
 ## Generator Registry
 
@@ -144,6 +193,9 @@ Generation parameters in `Config.gen` (`Config.App.lua`):
 | `nStars` | fn | Star count (function of RNG) |
 | `shipRes` | 8 | Ship mesh resolution |
 | `nebulaRes` | 1024 | Nebula texture resolution |
+| `nebulaStarTint` | 0.4 | Pull nebula hue toward star (skybox) |
+| `nebulaStarHighlight` | 0.6 | Star-lit glow on nebula gas (skybox) |
+| `nebulaStarRange` | 1.0 | Sky coverage for tint/highlight; 1 = full skybox, &lt;1 = tighter toward star |
 | `scalePlanet` | 2000 | Planet size scale |
 | `playerShipSize` | 4 | Player ship scale |
 

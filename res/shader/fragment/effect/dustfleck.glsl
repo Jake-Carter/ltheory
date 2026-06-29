@@ -6,6 +6,8 @@
 
 uniform vec2 size;
 
+varying float wrapDist;
+
 void main() {
   float dist = length(pos - eye);
   float alpha = exp(-pow2(2.0 * uv.x));

@@ -10,6 +10,7 @@ uniform vec2 size;
 
 varying float opacity;
 varying vec3 attrib;
+varying float wrapDist;
 
 const float kWrapDistance = 1024.0;
 
@@ -19,6 +20,7 @@ void main() {
   vec4 wp = mWorld * vec4(vertPos, 1.0);
   vec3 toCam = eye - wp.xyz;
   toCam = 2.0 * mod(toCam, vec3(kWrapDistance)) - vec3(kWrapDistance);
+  wrapDist = length(toCam) / kWrapDistance;
   wp.xyz = eye - toCam;
   vec3 up = normalize(axis);
   vec3 right = cross(normalize(toCam), up);

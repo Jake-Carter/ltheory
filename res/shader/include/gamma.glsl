@@ -1,4 +1,4 @@
-#ifndef include_gamme
+#ifndef include_gamma
 #define include_gamma
 
 #define GAMMA_CORRECT 1

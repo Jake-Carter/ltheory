@@ -3,18 +3,24 @@
 #include gamma
 #include color
 #include fog
-#include centralstar
+#include skybox_compose
 
 #autovar samplerCube envMap
 #autovar vec3 starDir
 
 uniform float intensity;
 uniform float starIntensity;
+uniform float nebulaStarTint;
+uniform float nebulaStarHighlight;
+uniform float nebulaStarRange;
 
 void main() {
   vec3 V = normalize(vertPos);
-  vec3 c = textureCube(envMap, V).xyz * intensity;
-  c += centralStarGlow(V, starDir, starColor) * starIntensity;
+  vec3 nebula = textureCube(envMap, V).xyz;
+  vec3 c = composeSkybox(
+    V, nebula, starDir, starColor,
+    intensity, starIntensity,
+    nebulaStarTint, nebulaStarHighlight, nebulaStarRange);
 
   gl_FragDepth = 1.0;
 

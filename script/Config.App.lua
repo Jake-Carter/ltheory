@@ -8,6 +8,10 @@ Config.run = {
   procGenSeed = nil,    -- fixed seed for ProcGenTest (nil = use kDefaultSeed in app)
   procGenBuildBSP = false, -- ProcGenTest only; attempt BSP.Create when true
   ltheorySeed = nil,    -- fixed seed for LTheory gate (nil = random)
+  nebulaExportDir   = './export/nebula/',
+  nebulaExportSeed  = nil,
+  nebulaExportRes   = 512,
+  nebulaExportSweep = nil,  -- optional list of override tables, e.g. {{ nebulaStarRange = 2 }}
 }
 
 Config.debug = {
@@ -65,6 +69,9 @@ Config.gen = {
   nebulaSkyIntensity  = 0.3,   -- nebula cubemap brightness (skybox shader)
   nebulaGIIntensity   = 0.1,   -- nebula fill on surfaces at full sky brightness; effective = this × nebulaSkyIntensity
   centralStarIntensity = 1.0,  -- central star brightness (skybox + surface GI)
+  nebulaStarTint       = 0.4,  -- pull nebula hue toward star color near starDir (skybox)
+  nebulaStarHighlight  = 0.6,  -- broad star-lit glow on nebula gas near starDir (skybox)
+  nebulaStarRange      = 1.0,  -- sky coverage for tint/highlight; 1 = full skybox, <1 = tighter toward star
 
   shipRes     = 8,
   nebulaRes   = 1024,
