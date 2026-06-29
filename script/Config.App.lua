@@ -60,7 +60,8 @@ Config.gen = {
   dustCloudDistance = 1024,  -- placement volume; must match kWrapDistance in billboard/wrapped.glsl
   dustFleckDistance = 1024,
   dustCloudSize     = 256,   -- billboard half-extent (world units)
-  dustCloudOpacity  = 0.5,   -- alpha multiplier
+  dustCloudOpacity  = 0.5,   -- cloud density mask (tex + fade)
+  dustScatterIntensity = 1.5,  -- emissive scatter brightness (clouds + flecks)
   dustCloudAlphaPower = 1.25, -- 1 = linear, 2 = old squared falloff (lower = more visible)
   dustCloudFadeWidth  = 0.35, -- distance fade band (0.25 = old narrow band)
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,

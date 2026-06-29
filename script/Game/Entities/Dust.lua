@@ -45,6 +45,14 @@ end
 local mIdentity = Matrix.Identity()
 local texDust
 
+local function dustLightingUniforms ()
+  Shader.SetFloat('starIntensity', Config.gen.centralStarIntensity or 1.0)
+  local sky = Config.gen.nebulaSkyIntensity or 1.0
+  Shader.SetFloat('nebulaGIIntensity', (Config.gen.nebulaGIIntensity or 0.05) * sky)
+  Shader.SetFloat('nebulaChromaVariance', Config.gen.nebulaChromaVariance or 0.2)
+  Shader.SetFloat('scatterIntensity', Config.gen.dustScatterIntensity or 1.5)
+end
+
 function Dust:render (state)
   self:forceLoad()
   if state.mode == BlendMode.Alpha then
@@ -69,14 +77,18 @@ function Dust:render (state)
     local up = cam.rot:getUp()
     local size = self.cloudSize
     shader:start()
+    dustLightingUniforms()
     Shader.SetFloat3('axis', up.x, up.y, up.z)
     Shader.SetFloat2('size', size, size)
     Shader.SetMatrix('mWorld', mIdentity)
     Shader.SetTex2D('texDust', texDust)
-    Shader.SetFloat('opacity', Config.gen.dustCloudOpacity or 2.0)
+    Shader.SetFloat('opacity', Config.gen.dustCloudOpacity or 0.5)
     Shader.SetFloat('alphaPower', Config.gen.dustCloudAlphaPower or 1.25)
     Shader.SetFloat('fadeWidth', Config.gen.dustCloudFadeWidth or 0.35)
+    -- Additive blend only for the draw: emissive scatter, not alpha occlusion.
+    BlendMode.PushAdditive()
     self.clouds:draw()
+    BlendMode.Pop()
     shader:stop()
     Profiler.End()
   elseif state.mode == BlendMode.Additive then
@@ -89,6 +101,7 @@ function Dust:render (state)
         local vn = vel:normalize()
         local shader = Cache.Shader('billboard/wrapped', 'effect/dustfleck')
         shader:start()
+        dustLightingUniforms()
         Shader.SetMatrix('mWorld', mIdentity)
         Shader.SetFloat2('size', 2.0, 0.1 * min(1000.0, vl))
         Shader.SetFloat3('axis', vn.x, vn.y, vn.z)

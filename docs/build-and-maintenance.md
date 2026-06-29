@@ -319,6 +319,38 @@ res/shader/
 
 Shaders are referenced by logical name, e.g. `Cache.Shader('wvp', 'material/metal')`.
 
+#### `#autovar` and the ShaderVar stack
+
+LibPHX does **not** bind every GLSL `uniform` automatically. Shared includes such as `fragment.glsl` declare common uniforms (`eye`, `envMap`, `irMap`, `starDir`, `starColor`, …), but those declarations alone do not connect them to Lua.
+
+Automatic binding works only for uniforms declared with **`#autovar`** in the shader entry file (vertex or fragment). During preprocessing, libphx strips the directive and registers the name; on `shader:start()`, values are pulled from the **ShaderVar stack** (`ShaderVar.Push*` / `Pop` in Lua, implemented in `libphx/src/ShaderVar.cpp` and `Shader.cpp`).
+
+Typical world render setup pushes skybox data once per frame, e.g. in `System:beginRender()`:
+
+```lua
+ShaderVar.PushFloat3('starDir', ...)
+ShaderVar.PushFloat3('starColor', ...)
+ShaderVar.PushTexCube('envMap', nebula.envMap)
+ShaderVar.PushTexCube('irMap', nebula.irMap)
+```
+
+A fragment shader that **uses** those samplers must repeat the autovar declarations in the entry `.glsl` file:
+
+```glsl
+#autovar samplerCube envMap
+#autovar samplerCube irMap
+#autovar vec3 starDir
+#autovar vec3 starColor
+```
+
+Without `#autovar`, the shader may compile and link, but cubemap/uniform lookups can be **unbound** (black output, zero scatter, invisible effects). Warnings such as `Automatic shader variable <envMap> does not exist` appear when `#autovar` is present but the uniform name does not match the linked program (often after a compile failure).
+
+**Alternatives:** set uniforms explicitly after `shader:start()` with `Shader.SetFloat`, `Shader.SetTex2D`, `Shader.SetTexCube`, etc. Per-draw or per-material values should use this path; frame-global values shared across many shaders (camera matrices, skybox) use `#autovar` + `ShaderVar.Push`.
+
+**Pitfall:** `#autovar` lines belong in the **entry** shader passed to `Cache.Shader`, not only in an `#include` file—includes are inlined before autovar parsing, but convention in this repo is to declare them alongside other uniforms in `fragment/effect/*.glsl`, `fragment/material/*.glsl`, etc. (see `skybox.glsl`, `light/global.glsl`, `effect/dustcloud.glsl`).
+
+**Pitfall:** GLSL 1.30 reserves `uniform` as a keyword; do not use it as a variable name (e.g. `const float uniform = 0.11` fails to compile).
+
 ---
 
 ## Running the Application

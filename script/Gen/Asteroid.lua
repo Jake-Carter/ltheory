@@ -10,7 +10,7 @@ local function generateAsteroid (seed)
   ss:setFloat('seed', rng:getUniformRange(0, 1000))
   ss:setFloat('smoothness', 2.5)
 
-  local res = 96
+  local res = 256
   local dMin = 0
   local dMax = 1
   local lac = 1.5

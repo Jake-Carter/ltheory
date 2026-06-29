@@ -116,6 +116,7 @@ libphx/
 | `RenderState` | Stack-based blend, cull, depth, wireframe |
 | `Shader` | Load/compile GLSL from resources; ref-counted cache |
 | `ShaderState` | Bound shader + uniform values |
+| `ShaderVar` | Stack of frame-global uniform values; bound via `#autovar` on `Shader_Start` (see [Shader `#autovar`](build-and-maintenance.md#autovar-and-the-shadervar-stack)) |
 | `RenderTarget` | FBO render-to-texture |
 | `Metric` | Draw-call / triangle counters |
 
