@@ -66,8 +66,8 @@ Config.gen = {
   dustCloudFadeWidth  = 0.35, -- distance fade band (0.25 = old narrow band)
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
   starfieldBrightness = 0.2,   -- proc-gen star vertex color scale
-  starfieldIntensity  = 0.3,   -- runtime star billboard glow (starbg shader)
-  nebulaSkyIntensity  = function (rng) return 0.22 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system sky brightness (~0.144–0.216, ±20% of 0.18)
+  starfieldIntensity  = 0.4,   -- runtime star billboard glow (starbg shader)
+  nebulaSkyIntensity  = function (rng) return 0.32 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system sky brightness (~0.144–0.216, ±20% of 0.18)
   nebulaGIIntensity   = 0.1,   -- nebula fill on surfaces at full sky brightness; effective = this × nebulaSkyIntensity
   centralStarIntensity = function (rng) return 0.5 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system central star (~0.4–0.6, ±20% of 0.5)
   nebulaStarTint       = 0.55,  -- saturation/brightness richness on star-anchored palette (skybox)
@@ -79,12 +79,13 @@ Config.gen = {
   nebulaAccentShadow    = 0.35, -- accent in low-density shadow lanes
   nebulaAccentRim       = 0.25, -- split-complement rim on filaments
   nebulaEdgeHighlight   = 1.0, -- compose-time accent rims on density edges
-  nebulaEdgeOcclude     = 1.15, -- compose-time dark lanes along cavity walls
+  nebulaEdgeOcclude     = 1.0, -- compose-time dark lanes along cavity walls
   nebulaEdgeScale       = 1.0,  -- finite-difference sample radius multiplier
-  nebulaHeatGlow        = 8.35, -- emissive ionized edge glow on fine structure
-  nebulaHeatSaturation  = 6.85, -- emission chroma (HII-like saturation)
-  nebulaHeatStarBias    = 0.05, -- angular falloff toward central star (< nebulaStarRange)
-  nebulaHeatHue         = 0.35, -- HSL hue shift from star (warm/magenta)
+  nebulaHeatGlow        = 0.25, -- emissive ionized edge glow (macro + fine structure)
+  nebulaHeatSaturation  = 0.80, -- emission chroma; drives white→orange→crimson ramp
+  nebulaHeatStarBias    = 0.45, -- angular falloff toward central star
+  nebulaHeatHue         = 0.08, -- HSL hue shift blended into heat ramp
+  nebulaHeatVariation   = 0.90, -- spatial patchiness + sparse hot flares (0 = uniform)
   nebulaBakeDetail      = 0.5, -- Nebula1 bake: high-freq cell overlay on macro structure
   nebulaGradeContrast   = 0.95, -- filament vs haze density separation
   nebulaGradeSaturation = 0.15, -- global saturation lift (compose)

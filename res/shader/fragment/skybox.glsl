@@ -29,6 +29,7 @@ uniform float nebulaHeatGlow;
 uniform float nebulaHeatSaturation;
 uniform float nebulaHeatStarBias;
 uniform float nebulaHeatHue;
+uniform float nebulaHeatVariation;
 
 void main() {
   vec3 V = normalize(vertPos);
@@ -40,7 +41,8 @@ void main() {
     nebulaAccentStrength, nebulaAccentShadow, nebulaAccentRim,
     nebulaGradeContrast, nebulaGradeSaturation, nebulaHighlightSaturation,
     nebulaEdgeHighlight, nebulaEdgeOcclude, nebulaEdgeScale,
-    nebulaHeatGlow, nebulaHeatSaturation, nebulaHeatStarBias, nebulaHeatHue);
+    nebulaHeatGlow, nebulaHeatSaturation, nebulaHeatStarBias, nebulaHeatHue,
+    nebulaHeatVariation);
 
   gl_FragDepth = 1.0;
 

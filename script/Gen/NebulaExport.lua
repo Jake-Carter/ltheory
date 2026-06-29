@@ -63,6 +63,7 @@ local function skyboxParams (overrides, nebula)
     nebulaHeatSaturation = overrides.nebulaHeatSaturation or Config.gen.nebulaHeatSaturation or 0.65,
     nebulaHeatStarBias   = overrides.nebulaHeatStarBias or Config.gen.nebulaHeatStarBias or 0.55,
     nebulaHeatHue        = overrides.nebulaHeatHue or Config.gen.nebulaHeatHue or 0.02,
+    nebulaHeatVariation  = overrides.nebulaHeatVariation or Config.gen.nebulaHeatVariation or 0.70,
     nebulaGradeContrast  = overrides.nebulaGradeContrast or Config.gen.nebulaGradeContrast or 0.45,
     nebulaGradeSaturation = overrides.nebulaGradeSaturation or Config.gen.nebulaGradeSaturation or 0.35,
     nebulaHighlightSaturation = overrides.nebulaHighlightSaturation or Config.gen.nebulaHighlightSaturation or 0.5,
@@ -184,6 +185,7 @@ function NebulaExport.renderComposedCubemap (nebula, overrides)
   ss:setFloat('nebulaHeatSaturation', p.nebulaHeatSaturation)
   ss:setFloat('nebulaHeatStarBias', p.nebulaHeatStarBias)
   ss:setFloat('nebulaHeatHue', p.nebulaHeatHue)
+  ss:setFloat('nebulaHeatVariation', p.nebulaHeatVariation)
   ss:setFloat('nebulaGradeContrast', p.nebulaGradeContrast)
   ss:setFloat('nebulaGradeSaturation', p.nebulaGradeSaturation)
   ss:setFloat('nebulaHighlightSaturation', p.nebulaHighlightSaturation)
@@ -257,6 +259,7 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
     nebulaHeatSaturation = p.nebulaHeatSaturation,
     nebulaHeatStarBias = p.nebulaHeatStarBias,
     nebulaHeatHue = p.nebulaHeatHue,
+    nebulaHeatVariation = p.nebulaHeatVariation,
     nebulaBakeDetail = Config.gen.nebulaBakeDetail or 0.45,
     nebulaGradeContrast = p.nebulaGradeContrast,
     nebulaGradeSaturation = p.nebulaGradeSaturation,

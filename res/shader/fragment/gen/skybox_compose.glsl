@@ -22,6 +22,7 @@ uniform float nebulaHeatGlow;
 uniform float nebulaHeatSaturation;
 uniform float nebulaHeatStarBias;
 uniform float nebulaHeatHue;
+uniform float nebulaHeatVariation;
 
 void main() {
   vec3 dir = cubeMapDir(uv);
@@ -33,6 +34,7 @@ void main() {
     nebulaAccentStrength, nebulaAccentShadow, nebulaAccentRim,
     nebulaGradeContrast, nebulaGradeSaturation, nebulaHighlightSaturation,
     nebulaEdgeHighlight, nebulaEdgeOcclude, nebulaEdgeScale,
-    nebulaHeatGlow, nebulaHeatSaturation, nebulaHeatStarBias, nebulaHeatHue);
+    nebulaHeatGlow, nebulaHeatSaturation, nebulaHeatStarBias, nebulaHeatHue,
+    nebulaHeatVariation);
   gl_FragColor = vec4(c, 1.0);
 }
