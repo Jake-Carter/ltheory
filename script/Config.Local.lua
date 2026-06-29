@@ -7,6 +7,7 @@ Config.ui.showTrackers = false
 
 Config.render.vsync = false
 -- Config.run.ltheorySeed = 17713639446270978484
+-- Config.run.ltheorySeed = 10531126295213924902
 
 -- Config.gen.nBeltSize = function (rng) return 10000 end
 Config.gen.scalePlanet = 5e3

@@ -67,24 +67,24 @@ Config.gen = {
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
   starfieldBrightness = 0.2,   -- proc-gen star vertex color scale
   starfieldIntensity  = 0.3,   -- runtime star billboard glow (starbg shader)
-  nebulaSkyIntensity  = function (rng) return 0.18 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system sky brightness (~0.144–0.216, ±20% of 0.18)
+  nebulaSkyIntensity  = function (rng) return 0.22 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system sky brightness (~0.144–0.216, ±20% of 0.18)
   nebulaGIIntensity   = 0.1,   -- nebula fill on surfaces at full sky brightness; effective = this × nebulaSkyIntensity
   centralStarIntensity = function (rng) return 0.5 * (0.8 + 0.4 * rng:getUniform()) end,  -- per-system central star (~0.4–0.6, ±20% of 0.5)
   nebulaStarTint       = 0.55,  -- saturation/brightness richness on star-anchored palette (skybox)
   nebulaStarHighlight  = 0.85,  -- star-lit scatter on nebula density (skybox)
   nebulaStarRange      = 1.0,  -- sky coverage for tint/highlight; 1 = full skybox, <1 = tighter toward star
-  nebulaChromaVariance = 0.2,  -- subtle accent variance from baked density structure (0 = pure star palette)
+  nebulaChromaVariance = 0.5,  -- subtle accent variance from baked density structure (0 = pure star palette)
   nebulaAccentHueOffset = 0.5,  -- HSL rotation from star to accent (0.5 = complement)
   nebulaAccentStrength  = 0.4,  -- mix accent into mid/shadow regions
   nebulaAccentShadow    = 0.35, -- accent in low-density shadow lanes
   nebulaAccentRim       = 0.25, -- split-complement rim on filaments
-  nebulaEdgeHighlight   = 1.28, -- compose-time accent rims on density edges
+  nebulaEdgeHighlight   = 1.48, -- compose-time accent rims on density edges
   nebulaEdgeOcclude     = 1.15, -- compose-time dark lanes along cavity walls
   nebulaEdgeScale       = 1.0,  -- finite-difference sample radius multiplier
-  nebulaBakeDetail      = 0.45, -- Nebula1 bake: high-freq cell overlay on macro structure
-  nebulaGradeContrast   = 0.45, -- filament vs haze density separation
-  nebulaGradeSaturation = 0.35, -- global saturation lift (compose)
-  nebulaHighlightSaturation = 0.5, -- extra saturation in bright filaments
+  nebulaBakeDetail      = 0.5, -- Nebula1 bake: high-freq cell overlay on macro structure
+  nebulaGradeContrast   = 2.45, -- filament vs haze density separation
+  nebulaGradeSaturation = 0.25, -- global saturation lift (compose)
+  nebulaHighlightSaturation = 2.5, -- extra saturation in bright filaments
 
   shipRes     = 8,
   nebulaRes   = 4096,
