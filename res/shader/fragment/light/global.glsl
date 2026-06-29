@@ -3,13 +3,18 @@
 #include deferred
 #include gamma
 #include math
+#include starlighting
 
 #autovar samplerCube irMap
 #autovar vec3 eye
+#autovar vec3 starDir
+#autovar vec3 starColor
 
 varying vec3 worldOrigin;
 varying vec3 worldDir;
 
+uniform float starIntensity;
+uniform float nebulaGIIntensity;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 
@@ -33,15 +38,21 @@ void main () {
   vec3 light = vec3(0.0);
 
   if (mat == Material_Diffuse) {
-    light += linear(textureCubeLod(irMap, N, 8.0).xyz);
+    light += linear(textureCubeLod(irMap, N, 8.0).xyz) * nebulaGIIntensity;
+    light += starIrradiance(N, starDir, starColor, starIntensity);
   }
 
   else if (mat == Material_Metal) {
+    float facing = saturate(dot(N, starDir));
+    float reflWeight = facing * facing;
+    vec3 envDiff = linear(textureCubeLod(irMap, N, 8.0).xyz);
     #ifdef HIGHQ
-      light += linear(textureCubeLod(irMap, R, roughnessToLOD(rough)).xyz);
+      vec3 envRefl = linear(textureCubeLod(irMap, R, roughnessToLOD(rough)).xyz);
     #else
-      light += linear(textureCube(envMap, R).xyz);
+      vec3 envRefl = linear(textureCube(envMap, R).xyz);
     #endif
+    light += mix(envDiff, envRefl, reflWeight) * nebulaGIIntensity;
+    light += starReflectance(R, N, starDir, starColor, starIntensity, facing);
   }
 
   else if (mat == Material_NoShade) {

@@ -62,11 +62,12 @@ Config.gen = {
   nStars      = function (rng) return 5000 * (1.0 + 0.5 * rng:getExp()) end,
   starfieldBrightness = 0.015, -- proc-gen star vertex color scale
   starfieldIntensity  = 1.0,   -- runtime star billboard glow (starbg shader)
-  nebulaSkyIntensity  = 1.0,   -- nebula cubemap base brightness (skybox shader)
-  centralStarIntensity = 1.0,  -- central star bloom near starDir (skybox shader)
+  nebulaSkyIntensity  = 1.0,   -- nebula cubemap brightness (skybox shader)
+  nebulaGIIntensity   = 0.05,  -- nebula fill on surfaces at full sky brightness; effective = this × nebulaSkyIntensity
+  centralStarIntensity = 1.0,  -- central star brightness (skybox + surface GI)
 
   shipRes     = 8,
-  nebulaRes   = 4096,
+  nebulaRes   = 1024,
 
   scalePlanet = 2000,
   playerShipSize = 4,

@@ -4,7 +4,6 @@
 #include noise
 #include texcube
 
-uniform vec3 color;
 uniform float seed;
 
 float bgDensity(vec3 p) {

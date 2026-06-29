@@ -36,7 +36,9 @@ end
 
 function System:beginRender ()
   self.nebula:forceLoad()
+  local c = self.nebula.starColor
   ShaderVar.PushFloat3('starDir', self.starDir.x, self.starDir.y, self.starDir.z)
+  ShaderVar.PushFloat3('starColor', c.x, c.y, c.z)
   ShaderVar.PushTexCube('envMap', self.nebula.envMap)
   ShaderVar.PushTexCube('irMap', self.nebula.irMap)
 end
@@ -50,6 +52,7 @@ end
 
 function System:endRender ()
   ShaderVar.Pop('starDir')
+  ShaderVar.Pop('starColor')
   ShaderVar.Pop('envMap')
   ShaderVar.Pop('irMap')
 end
