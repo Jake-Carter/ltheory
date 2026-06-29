@@ -20,7 +20,6 @@ Config.gen.nStations = 2
 Config.gen.dustCloudSize = 256
 Config.gen.dustCloudOpacity = 0.5
 Config.gen.nDustClouds = 64
--- Config.gen.nDustFlecks = 2048
 
 Config.gen.starfieldIntensity = 0.3
 Config.gen.starfieldBrightness = 0.2
