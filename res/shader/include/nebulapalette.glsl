@@ -171,82 +171,66 @@ float nebulaCubemapDensity (samplerCube map, vec3 dir, float lod) {
   return nebulaDensityShape(lum(baked));
 }
 
-float nebulaSpatialEdgeAt (samplerCube map, vec3 dir, float eps) {
-  vec3 t1, t2;
-  nebulaCubeTangentFrame(dir, t1, t2);
-  float d0 = nebulaCubemapDensity(map, dir, 0.0);
-  float d1 = nebulaCubemapDensity(map, normalize(dir + eps * t1), 0.0);
-  float d2 = nebulaCubemapDensity(map, normalize(dir + eps * t2), 0.0);
-  float g = length(vec2(d1 - d0, d2 - d0));
+float nebulaSpatialEdgeFromGrad (vec2 grad) {
+  float g = length(grad);
   return g / (g + 0.065);
 }
 
-float nebulaSpatialEdge (samplerCube map, vec3 dir, float scale) {
-  return nebulaSpatialEdgeAt(map, dir, 0.0035 * max(scale, 0.25));
-}
-
-/* Pillar-scale silhouette from blurred-vs-sharp density (macro backlighting). */
-float nebulaMacroSilhouette (samplerCube map, vec3 dir) {
-  float sharp = nebulaCubemapDensity(map, dir, 0.0);
-  float blur = nebulaCubemapDensity(map, dir, 3.0);
-  return nebulaSoftBand(abs(sharp - blur), 0.025, 0.28);
-}
-
-float nebulaUnsharpDetail (samplerCube map, vec3 dir) {
-  return nebulaCubemapDensity(map, dir, 0.0) - nebulaCubemapDensity(map, dir, 1.75);
-}
-
-/* Star-facing ionization front — bright where density rises toward the star. */
-float nebulaBacklitEdgeBoost (
-    vec3 dir, vec3 starDir, samplerCube map, float eps)
+/* One tangent frame + six cubemap taps shared by structure + heat passes. */
+void nebulaFetchEdgeData (
+    samplerCube map, vec3 dir, vec3 starDir, float edgeScale, float d0,
+    out float fineE, out float macroE, out float silhouette,
+    out float detail, out float backlit, out float heatT)
 {
   vec3 t1, t2;
   nebulaCubeTangentFrame(dir, t1, t2);
-  float d0 = nebulaCubemapDensity(map, dir, 0.0);
-  float d1 = nebulaCubemapDensity(map, normalize(dir + eps * t1), 0.0);
-  float d2 = nebulaCubemapDensity(map, normalize(dir + eps * t2), 0.0);
-  vec3 grad = t1 * (d1 - d0) + t2 * (d2 - d0);
-  float gLen = length(grad);
-  if (gLen < 1e-5) return 0.55;
-  vec3 starTan = starDir - dir * dot(starDir, dir);
-  float sl = length(starTan);
-  if (sl < 1e-5) return 0.55;
-  float facing = dot(grad / gLen, starTan / sl);
-  return mix(0.42, 1.0, nebulaSoftBand(facing, -0.12, 0.52));
-}
+  float epsFine = 0.0035 * max(edgeScale, 0.25);
+  float epsMacro = 0.014 * max(edgeScale, 0.25);
 
-/* Combined fine + macro edge strength for rim effects. */
-float nebulaCombinedEdge (
-    samplerCube envMap, vec3 dir, float edgeScale, out float heatT)
-{
-  float fineE = nebulaSpatialEdgeAt(envMap, dir, 0.0035 * max(edgeScale, 0.25));
-  float macroE = nebulaSpatialEdgeAt(envMap, dir, 0.014 * max(edgeScale, 0.25));
-  float silhouette = nebulaMacroSilhouette(envMap, dir);
+  float d1f = nebulaCubemapDensity(map, normalize(dir + epsFine * t1), 0.0);
+  float d2f = nebulaCubemapDensity(map, normalize(dir + epsFine * t2), 0.0);
+  float d1m = nebulaCubemapDensity(map, normalize(dir + epsMacro * t1), 0.0);
+  float d2m = nebulaCubemapDensity(map, normalize(dir + epsMacro * t2), 0.0);
+  float blurMid = nebulaCubemapDensity(map, dir, 1.75);
+  float blurHigh = nebulaCubemapDensity(map, dir, 3.0);
 
-  float detail = max(nebulaUnsharpDetail(envMap, dir), 0.0);
-  float fineWisp = fineE * nebulaSoftBand(detail, -0.02, 0.14);
+  fineE = nebulaSpatialEdgeFromGrad(vec2(d1f - d0, d2f - d0));
+  macroE = nebulaSpatialEdgeFromGrad(vec2(d1m - d0, d2m - d0));
+  silhouette = nebulaSoftBand(abs(d0 - blurHigh), 0.025, 0.28);
+  detail = d0 - blurMid;
 
+  float fineWisp = fineE * nebulaSoftBand(max(detail, 0.0), -0.02, 0.14);
   float edge = max(macroE, silhouette);
   edge = max(edge, fineWisp * 0.38);
   heatT = saturate(max(edge, macroE * 0.65 + silhouette * 0.85));
-  return edge;
+
+  vec3 grad = t1 * (d1m - d0) + t2 * (d2m - d0);
+  float gLen = length(grad);
+  if (gLen < 1e-5) {
+    backlit = 0.55;
+    return;
+  }
+  vec3 starTan = starDir - dir * dot(starDir, dir);
+  float sl = length(starTan);
+  if (sl < 1e-5) {
+    backlit = 0.55;
+    return;
+  }
+  float facing = dot(grad / gLen, starTan / sl);
+  backlit = mix(0.42, 1.0, nebulaSoftBand(facing, -0.12, 0.52));
 }
 
 /* Fine filament rims (highlight) and cavity lanes (multiplicative occlude). */
-void nebulaStructureEdges (
-    samplerCube envMap, vec3 dir, float density,
-    vec3 starColor, vec3 accentColor,
-    float edgeHighlight, float edgeOcclude, float edgeScale,
+void nebulaStructureEdgesFromData (
+    float fineE, float detail, float density,
+    vec3 accentColor, float edgeHighlight, float edgeOcclude,
     out vec3 highlight, out float occlusion)
 {
   highlight = vec3(0.0);
   occlusion = 0.0;
   if (edgeHighlight <= 1e-5 && edgeOcclude <= 1e-5) return;
 
-  float spatial = nebulaSpatialEdge(envMap, dir, edgeScale);
-  float detail = nebulaUnsharpDetail(envMap, dir);
-  float edge = spatial * (0.6 + 0.4 * nebulaSoftBand(detail, -0.04, 0.12));
-
+  float edge = fineE * (0.6 + 0.4 * nebulaSoftBand(detail, -0.04, 0.12));
   float hiBand = nebulaSoftBand(density, 0.14, 0.66);
   float shadowBand = nebulaSoftBand(1.0 - density, 0.06, 0.55);
 
@@ -305,9 +289,9 @@ void nebulaHeatSpatialVariation (
   float seed = l * 13.7 + n.g * 5.3 + n.b * 2.1;
   vec3 p = dir * 5.0 + seed;
 
-  float macro = fSmoothNoise(p, 4, 2.05);
-  float meso = frCellNoise(p * 1.8 + 0.31, seed + 7.0, 4, 2.15);
-  float fine = fSmoothNoise(p * 11.0, 3, 2.3);
+  float macro = fSmoothNoise(p, 2, 2.05);
+  float meso = fSmoothNoise(p * 1.8 + 0.31, 2, 2.15);
+  float fine = fSmoothNoise(p * 11.0, 2, 2.3);
 
   /* Large quiet vs active regions — not every edge glows equally. */
   float patch = mix(0.12, 1.0, nebulaSoftBand(macro, 0.16, 0.80));
@@ -316,7 +300,7 @@ void nebulaHeatSpatialVariation (
   intensityMult = mix(1.0, patch * breakup * sparkle, variation);
 
   /* Sparse ionized flares — tips/ridges that "catch fire" near the star. */
-  float cell = frCellNoise(dir * 8.5 + starDir * 1.5, seed + 23.0, 5, 2.0);
+  float cell = fSmoothNoise(dir * 8.5 + starDir * 1.5, 2, 2.0);
   hotspot = variation * nebulaSoftBand(cell, 0.66, 0.93) * scatter * scatter;
 
   /* Local color temperature: meso highs run hotter (whiter), lows deeper crimson. */
@@ -324,21 +308,17 @@ void nebulaHeatSpatialVariation (
 }
 
 /* Ionized edge glow — macro backlit pillars + fine wisps, emissive at compose. */
-vec3 nebulaIonizedEdgeGlow (
-    samplerCube envMap, vec3 dir, vec3 baked, float density,
+vec3 nebulaIonizedEdgeGlowFromData (
+    vec3 dir, vec3 baked, float density,
     vec3 starDir, vec3 starColor, vec3 accentColor,
     float heatIntensity, float heatSaturation, float heatStarBias, float heatHue,
-    float edgeScale, float heatVariation)
+    float heatVariation,
+    float edgeStrength, float backlit, float heatT)
 {
   if (heatIntensity <= 1e-5) return vec3(0.0);
 
-  float heatT;
-  float edgeStrength = nebulaCombinedEdge(envMap, dir, edgeScale, heatT);
-
   float ionFront = nebulaSoftBand(density, 0.10, 0.84)
     * nebulaSoftBand(1.0 - density, 0.02, 0.68);
-  float backlit = nebulaBacklitEdgeBoost(
-    dir, starDir, envMap, 0.014 * max(edgeScale, 0.25));
   float scatter = nebulaStarAngularWeight(dir, starDir, heatStarBias, 1.2);
 
   float intensityMult, heatTBias, hotspot;

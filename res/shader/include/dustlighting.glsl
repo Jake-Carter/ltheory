@@ -19,11 +19,10 @@ float dustScatterPhase (float cosTheta, float anisotropy) {
 }
 
 vec3 nebulaPaletteSample (
-    vec3 dir, samplerCube map,
+    vec3 dir, vec3 baked,
     vec3 starColor, vec3 accentColor,
-    float chromaVariance, float accentStrength, float accentShadow, float lod)
+    float chromaVariance, float accentStrength, float accentShadow)
 {
-  vec3 baked = textureCubeLod(map, dir, lod).xyz;
   float density = nebulaDensity(baked);
   vec3 c = nebulaDualPalette(
     baked, starColor, accentColor, density, chromaVariance, accentStrength);
@@ -47,7 +46,7 @@ vec3 shadeDustCloudScatter (
   float gas = 0.3 + 0.7 * density;
 
   vec3 scatter = nebulaPaletteSample(
-    Vn, envMap, starColor, accentColor, chromaVariance, accentStrength, accentShadow, 2.5)
+    Vn, baked, starColor, accentColor, chromaVariance, accentStrength, accentShadow)
     * nebulaGIIntensity * 1.4 * gas;
   scatter += linear(textureCubeLod(irMap, Vn, 4.0).xyz) * nebulaGIIntensity * 0.55 * gas;
 
@@ -70,10 +69,11 @@ vec3 shadeDustFleck (
   float cosTheta = dot(Vn, starDir);
   float phase = dustScatterPhase(cosTheta, 0.25);
 
+  vec3 baked = textureCubeLod(envMap, Vn, 3.0).xyz;
   vec3 scatter = star * starIntensity * (phase * 1.2 + 0.04);
   scatter += star * streakT * starIntensity * 0.25 * saturate(cosTheta * 0.5 + 0.5);
   scatter += nebulaPaletteSample(
-    Vn, envMap, starColor, accentColor, chromaVariance, accentStrength, accentShadow, 3.0)
+    Vn, baked, starColor, accentColor, chromaVariance, accentStrength, accentShadow)
     * nebulaGIIntensity * 0.35;
   scatter += linear(textureCubeLod(irMap, Vn, 4.0).xyz) * nebulaGIIntensity * 0.25;
   scatter = mix(scatter, scatter * vec3(1.04, 0.95, 0.88), 0.3);
