@@ -26,7 +26,11 @@ vec3 composeSkybox (
     float highlightSaturation,
     float edgeHighlight,
     float edgeOcclude,
-    float edgeScale)
+    float edgeScale,
+    float heatGlow,
+    float heatSaturation,
+    float heatStarBias,
+    float heatHue)
 {
   float rawD = lum(max(linear(nebula), vec3(0.0)));
   float density = gradeNebulaDensity(rawD, gradeContrast);
@@ -46,6 +50,9 @@ vec3 composeSkybox (
     edgeHighlight, edgeOcclude, edgeScale);
   c *= intensity;
   c += nebulaStarScatterHighlight(nebula, starColor, scatter, nebulaStarHighlight) * intensity;
+  c += nebulaIonizedEdgeGlow(
+    envMap, dir, density, starDir, starColor, accentColor,
+    heatGlow, heatSaturation, heatStarBias, heatHue, edgeScale);
   c += centralStarGlow(dir, starDir, starColor) * starIntensity;
   return c;
 }

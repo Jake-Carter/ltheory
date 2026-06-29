@@ -8,6 +8,7 @@ Config.ui.showTrackers = false
 Config.render.vsync = false
 -- Config.run.ltheorySeed = 17713639446270978484
 -- Config.run.ltheorySeed = 10531126295213924902
+Config.run.ltheorySeed = 1
 
 -- Config.gen.nBeltSize = function (rng) return 10000 end
 Config.gen.scalePlanet = 5e3
@@ -18,7 +19,7 @@ Config.gen.nTurrets = 1
 Config.gen.nThrusters = 2
 Config.gen.nStations = 2
 Config.gen.dustCloudSize = 256
-Config.gen.dustCloudOpacity = 0.5
+Config.gen.dustCloudOpacity = 1.0
 Config.gen.nDustClouds = 0
 Config.gen.nDustFlecks = 512
 Config.gen.dustScatterIntensity = 3.0

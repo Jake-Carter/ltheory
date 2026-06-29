@@ -59,6 +59,10 @@ local function skyboxParams (overrides, nebula)
     nebulaEdgeHighlight  = overrides.nebulaEdgeHighlight or Config.gen.nebulaEdgeHighlight or 0.28,
     nebulaEdgeOcclude    = overrides.nebulaEdgeOcclude or Config.gen.nebulaEdgeOcclude or 0.15,
     nebulaEdgeScale      = overrides.nebulaEdgeScale or Config.gen.nebulaEdgeScale or 1.0,
+    nebulaHeatGlow       = overrides.nebulaHeatGlow or Config.gen.nebulaHeatGlow or 0.35,
+    nebulaHeatSaturation = overrides.nebulaHeatSaturation or Config.gen.nebulaHeatSaturation or 0.65,
+    nebulaHeatStarBias   = overrides.nebulaHeatStarBias or Config.gen.nebulaHeatStarBias or 0.55,
+    nebulaHeatHue        = overrides.nebulaHeatHue or Config.gen.nebulaHeatHue or 0.02,
     nebulaGradeContrast  = overrides.nebulaGradeContrast or Config.gen.nebulaGradeContrast or 0.45,
     nebulaGradeSaturation = overrides.nebulaGradeSaturation or Config.gen.nebulaGradeSaturation or 0.35,
     nebulaHighlightSaturation = overrides.nebulaHighlightSaturation or Config.gen.nebulaHighlightSaturation or 0.5,
@@ -176,6 +180,10 @@ function NebulaExport.renderComposedCubemap (nebula, overrides)
   ss:setFloat('nebulaEdgeHighlight', p.nebulaEdgeHighlight)
   ss:setFloat('nebulaEdgeOcclude', p.nebulaEdgeOcclude)
   ss:setFloat('nebulaEdgeScale', p.nebulaEdgeScale)
+  ss:setFloat('nebulaHeatGlow', p.nebulaHeatGlow)
+  ss:setFloat('nebulaHeatSaturation', p.nebulaHeatSaturation)
+  ss:setFloat('nebulaHeatStarBias', p.nebulaHeatStarBias)
+  ss:setFloat('nebulaHeatHue', p.nebulaHeatHue)
   ss:setFloat('nebulaGradeContrast', p.nebulaGradeContrast)
   ss:setFloat('nebulaGradeSaturation', p.nebulaGradeSaturation)
   ss:setFloat('nebulaHighlightSaturation', p.nebulaHighlightSaturation)
@@ -245,6 +253,10 @@ function NebulaExport.exportNebula (nebula, seed, outDir, options)
     nebulaEdgeHighlight = p.nebulaEdgeHighlight,
     nebulaEdgeOcclude = p.nebulaEdgeOcclude,
     nebulaEdgeScale = p.nebulaEdgeScale,
+    nebulaHeatGlow = p.nebulaHeatGlow,
+    nebulaHeatSaturation = p.nebulaHeatSaturation,
+    nebulaHeatStarBias = p.nebulaHeatStarBias,
+    nebulaHeatHue = p.nebulaHeatHue,
     nebulaBakeDetail = Config.gen.nebulaBakeDetail or 0.45,
     nebulaGradeContrast = p.nebulaGradeContrast,
     nebulaGradeSaturation = p.nebulaGradeSaturation,

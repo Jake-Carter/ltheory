@@ -188,4 +188,40 @@ vec3 nebulaStructureEdges (
   return highlight - occlude;
 }
 
+/* Warm HII emission chroma — star hue with optional shift toward magenta/red. */
+vec3 nebulaHeatEmission (
+    vec3 starColor, vec3 accentColor, float heatSaturation, float heatHue)
+{
+  vec3 star = max(linear(starColor), vec3(0.0));
+  vec3 hsl = toHSL(star);
+  hsl.x = fract(hsl.x + heatHue);
+  hsl.y = mix(hsl.y, min(1.0, hsl.y + heatSaturation * 0.55 + 0.15), heatSaturation);
+  hsl.z = mix(hsl.z, min(1.0, hsl.z + heatSaturation * 0.12), heatSaturation * 0.85);
+  vec3 heat = toRGB(hsl);
+  heat = mix(heat, linear(accentColor), heatSaturation * 0.15);
+  return oversaturate(max(heat, vec3(0.0)), heatSaturation * 0.45);
+}
+
+/* Ionized edge glow on fine structure — emissive, star-biased, additive at compose. */
+vec3 nebulaIonizedEdgeGlow (
+    samplerCube envMap, vec3 dir, float density,
+    vec3 starDir, vec3 starColor, vec3 accentColor,
+    float heatIntensity, float heatSaturation, float heatStarBias, float heatHue,
+    float edgeScale)
+{
+  if (heatIntensity <= 1e-5) return vec3(0.0);
+
+  float spatial = nebulaSpatialEdge(envMap, dir, edgeScale);
+  float detail = max(nebulaUnsharpDetail(envMap, dir), 0.0);
+  float edge = spatial * nebulaSoftBand(detail, 0.0, 0.08);
+
+  float scatter = nebulaStarAngularWeight(dir, starDir, heatStarBias, 1.2);
+  float ionFront = nebulaSoftBand(density, 0.25, 0.72)
+    * nebulaSoftBand(1.0 - density, 0.05, 0.45);
+  float mask = edge * ionFront * mix(0.35, 1.0, scatter);
+
+  vec3 heat = nebulaHeatEmission(starColor, accentColor, heatSaturation, heatHue);
+  return heat * mask * heatIntensity;
+}
+
 #endif

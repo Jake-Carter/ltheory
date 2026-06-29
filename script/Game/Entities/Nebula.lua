@@ -33,6 +33,10 @@ local function nebulaComposeUniforms ()
   Shader.SetFloat('nebulaEdgeHighlight', Config.gen.nebulaEdgeHighlight or 0.28)
   Shader.SetFloat('nebulaEdgeOcclude', Config.gen.nebulaEdgeOcclude or 0.15)
   Shader.SetFloat('nebulaEdgeScale', Config.gen.nebulaEdgeScale or 1.0)
+  Shader.SetFloat('nebulaHeatGlow', Config.gen.nebulaHeatGlow or 0.35)
+  Shader.SetFloat('nebulaHeatSaturation', Config.gen.nebulaHeatSaturation or 0.65)
+  Shader.SetFloat('nebulaHeatStarBias', Config.gen.nebulaHeatStarBias or 0.55)
+  Shader.SetFloat('nebulaHeatHue', Config.gen.nebulaHeatHue or 0.02)
 end
 
 function Nebula:forceLoad ()
