@@ -47,11 +47,14 @@ void main() {
   }
 
   #if COLOR_GRADING
-    /* Bezier grading with screenspace variation. */ {
+    /* Bezier grading. Control points are the screen-center (uv = 0.5) values
+       of the old screenspace-varying grade; per-channel spread must stay
+       uniform across the frame, else channels shape differently top-vs-bottom
+       and produce a view-dependent saturation gradient on the skybox. */ {
       c = beziernorm3(c,
-        vec3(0.25, 0.20 + 0.1 * uv.x, 0.35 - 0.15 * uv.y),
-        vec3(0.40, 0.50 - 0.20 * uv.y, 0.50),
-        vec3(0.80 + 0.2 * uv.y, 0.80, 0.80 - 0.40 * sqrt(uv.x * uv.y))
+        vec3(0.25, 0.25, 0.275),
+        vec3(0.40, 0.40, 0.50),
+        vec3(0.90, 0.80, 0.60)
       );
     }
   #endif

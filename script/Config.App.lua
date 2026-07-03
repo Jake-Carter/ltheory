@@ -78,17 +78,17 @@ Config.gen = {
   nebulaAccentStrength  = 0.4,  -- mix accent into mid/shadow regions
   nebulaAccentShadow    = 0.35, -- accent in low-density shadow lanes
   nebulaAccentRim       = 0.25, -- split-complement rim on filaments
-  nebulaEdgeHighlight   = 1.0, -- compose-time accent rims on density edges
+  nebulaEdgeHighlight   = 0.92, -- compose-time accent rims on density edges
   nebulaEdgeOcclude     = 1.0, -- compose-time dark lanes along cavity walls
   nebulaEdgeScale       = 1.0,  -- finite-difference sample radius multiplier
   nebulaHeatGlow        = 0.25, -- emissive ionized edge glow (macro + fine structure)
   nebulaHeatSaturation  = 0.80, -- emission chroma; drives white→orange→crimson ramp
   nebulaHeatStarBias    = 0.45, -- angular falloff toward central star
-  nebulaHeatHue         = 0.08, -- HSL hue shift blended into heat ramp
+  nebulaHeatHue         = 0.12, -- HSL hue shift blended into heat ramp
   nebulaHeatVariation   = 0.90, -- spatial patchiness + sparse hot flares (0 = uniform)
   nebulaBakeDetail      = 0.5, -- Nebula1 bake: high-freq cell overlay on macro structure
   nebulaGradeContrast   = 0.95, -- filament vs haze density separation
-  nebulaGradeSaturation = 0.15, -- global saturation lift (compose)
+  nebulaGradeSaturation = 0.3, -- global saturation lift (compose)
   nebulaHighlightSaturation = 0.5, -- extra saturation in bright filaments
 
   shipRes     = 8,
