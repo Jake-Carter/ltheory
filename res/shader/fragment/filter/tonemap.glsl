@@ -21,6 +21,10 @@ const float kVignetteHardness = 32.0;
 void main() {
   vec4 cc = texture2D(src, uv);
   vec3 c = cc.xyz;
+  /* Clamp to >= 0 before any pow()/gamma(). A negative HDR channel (produced by
+   * a downstream additive/lighting pass) would make pow(c, ...) return NaN,
+   * which renders as isolated black speckles in otherwise bright regions. */
+  c = max(c, vec3(0.0));
   c = gamma(c);
 
   #if VIGNETTE
@@ -60,11 +64,18 @@ void main() {
   #endif
 
   #if DESAT
-    /* Desaturate as lum -> 1 for 'more realistic' highlights. */ {
-      vec3 hsl = toHSL(c);
-      hsl.y = mix(hsl.y, 0.0, pow4(hsl.z));
-      c = toRGB(hsl);
-    }
+    /* Desaturate as luminance -> 1 for 'more realistic' highlights.
+     *
+     * This mixes toward luminance-grey directly instead of the old
+     * toHSL()/toRGB() round-trip. That round-trip computed HSL saturation as
+     * s = (M - m) / (2 - (M + m)); for the near-white, faintly-tinted pixels
+     * that dominate a blown-out nebula, (2 - (M + m)) collapses toward zero (and
+     * can flip sign under float rounding when a channel sits at ~1.0), yielding
+     * an out-of-range saturation that toRGB() turned into negative/black. That
+     * produced isolated black speckles scattered through the brightest gas. The
+     * luminance mix below has no division and no round-trip, so it is stable. */
+    float desatL = lum(c);
+    c = mix(c, vec3(desatL), pow4(saturate(desatL)));
   #endif
 
   #if HDR

@@ -54,9 +54,17 @@ function Nebula:forceLoad ()
     local accent = NebulaPalette.pickAccentColor(rng, star, hueOffset)
     self.accentColor = accent:toVec3()
   end
-  self.irMap = self.envMap:genIRMap(256):managed()
   self.stars = Gen.Starfield(rng, Config.gen.nStars(rng)):managed()
   nebulaLightingScalars(self)
+
+  -- Build the irradiance map from the *composed* nebula (colored gas + emissive
+  -- heat/scatter) rather than the raw density bake, so bright regions actually
+  -- emit light onto the scene. Exclude the central-star glow (starIrradiance
+  -- handles the star directly) to avoid double-counting it as ambient.
+  local NebulaCompose = require('Gen.NebulaCompose')
+  local composed = NebulaCompose.renderComposedCubemap(self, { centralStarIntensity = 0 }, 256)
+  self.irMap = composed:genIRMap(256):managed()
+  composed:free()
 end
 
 function Nebula:render (state)

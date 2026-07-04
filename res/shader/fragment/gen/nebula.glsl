@@ -95,15 +95,23 @@ vec4 generate(vec3 dir) {
   float raw = max(lum(c), max(max(c.r, c.g), c.b));
   float density = min(1.0, 1.0 - exp(-3.0 * raw));
 
-  /* High-frequency cell overlay — bakes fine edge structure into the cubemap. */
+  /* High-frequency cell overlay — bakes fine edge structure into the cubemap.
+   * NOTE: the darkening MUST be relative to local density. An absolute
+   * subtraction that peaks in low-density gas (the old `(1 - macro*0.85)` term)
+   * guts faint gas along cell-noise contours (macro ~0.1 driven to ~0.05),
+   * baking near-black traces that become hard black lines once the sky is
+   * brightened. Scale both bright and dark contributions by macro and apply
+   * them multiplicatively so faint gas is only gently modulated, never carved
+   * to black. */
   if (detailStrength > 1e-4) {
     float macro = density;
     vec3 ndir = normalize(dir);
     float detail = frCellNoise(ndir * (13.0 + fract(seed * 0.013)), seed + 77.0, 6, 2.1);
     float edge = abs(detail - 0.5) * 2.0;
-    float hi = detailStrength * edge * macro * (1.0 - macro);
-    float occ = detailStrength * edge * (1.0 - macro * 0.85);
-    density = clamp(macro + 0.22 * hi - 0.12 * occ, 0.0, 1.0);
+    float bright = edge * (1.0 - macro);
+    float dark   = edge * macro;
+    float mod = detailStrength * (0.34 * bright - 0.30 * dark);
+    density = clamp(macro * (1.0 + mod), 0.0, 1.0);
   }
 
   return vec4(vec3(density), opacity);
