@@ -6,7 +6,7 @@ Config.debug.metrics = true
 Config.ui.showTrackers = false
 
 Config.render.vsync = false
--- Config.run.ltheorySeed = 14589938814258111262
+Config.run.ltheorySeed = 12764594770266686642ULL
 -- Config.run.ltheorySeed = 10531126295213924902
 -- Config.run.ltheorySeed = 2
 

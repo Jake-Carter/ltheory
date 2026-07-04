@@ -72,6 +72,17 @@ cmake --build build
 
 You can also open `build/LTheory.sln` in Visual Studio. Use the **RelWithDebInfo** configuration for normal development.
 
+### Windows on ARM64
+
+Windows ARM64 hardware is supported by building the **x64** target, not native ARM64. Limit Theory depends on LuaJIT's JIT; LuaJIT does not provide a working JIT backend for native Windows ARM64. CMake rejects `-A ARM64` / `-A ARM64EC` at configure time.
+
+```bash
+cmake -S . -B build -A x64
+cmake --build build --config RelWithDebInfo
+```
+
+Run `bin/lt64.exe` as usual; Windows executes the x64 binary under x64 emulation with JIT enabled.
+
 ### CMake Structure
 
 **Root `CMakeLists.txt`:**
@@ -207,11 +218,12 @@ Linux CMake paths exist but are less tested than Windows. SDL3 + static deps are
 
 | Platform | Status |
 |----------|--------|
-| **Windows** (32/64) | Primary, fully wired in CMake |
+| **Windows x64** | Primary, fully wired in CMake |
+| **Windows on ARM64 (x64 build)** | Supported via `-A x64` and x64 emulation; native `-A ARM64` rejected (LuaJIT JIT) |
 | **Linux** (32/64) | CMake paths exist; ext-lib import incomplete |
 | **macOS** | Explicitly unsupported |
 
-Primary development platform is **Windows** with Visual Studio or Ninja.
+Primary development platform is **Windows x64** with Visual Studio or Ninja.
 
 ---
 
@@ -236,6 +248,10 @@ Use `git clone --recursive` so the `libphx` submodule is present. First CMake co
 ---
 
 ## Known Build Issues
+
+### Native Windows ARM64 rejected
+
+`cmake -S . -B build -A ARM64` fails at configure time because LuaJIT JIT is required and unavailable on native Windows ARM64. On ARM64 Windows, use `-A x64` instead (see [Windows on ARM64](#windows-on-arm64)).
 
 ### Stale binaries in `bin/`
 
