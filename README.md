@@ -45,14 +45,21 @@ cmake --build build --config RelWithDebInfo
 
 ### Windows on ARM64
 
-If you are on a Windows ARM64 machine (Surface, Copilot+ PC, etc.), still configure for **x64**, not ARM64. Limit Theory depends on LuaJIT's JIT, which is not available for native Windows ARM64 builds. Use:
+If you are on a Windows ARM64 machine (Surface, Copilot+ PC, etc.), use **ARM64EC** for the best performance while keeping LuaJIT JIT enabled. ARM64EC compiles the engine natively on ARM while linking the x64 LuaJIT build for JIT support:
+
+```bash
+cmake -S . -B build -A ARM64EC
+cmake --build build --config RelWithDebInfo
+```
+
+Alternatively, a full **x64** build runs entirely under Windows x64 emulation (simpler, but slower):
 
 ```bash
 cmake -S . -B build -A x64
 cmake --build build --config RelWithDebInfo
 ```
 
-The x64 binaries run under Windows x64 emulation with JIT enabled. Configuring with `-A ARM64` is rejected at configure time with an explanatory error.
+Native **ARM64** (`-A ARM64`) is not supported because LuaJIT JIT is unavailable there. CMake rejects it at configure time with an explanatory error.
 
 This produces `bin/lt64.exe`, `bin/libphx64.dll`, `bin/SDL3.dll`, `bin/lua51.dll`, and `bin/lfs.dll`. First configure downloads and builds third-party libraries (SDL3, Bullet, FreeType, etc.) via CMake FetchContent — allow a few minutes and network access.
 

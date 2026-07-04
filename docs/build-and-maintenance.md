@@ -74,14 +74,23 @@ You can also open `build/LTheory.sln` in Visual Studio. Use the **RelWithDebInfo
 
 ### Windows on ARM64
 
-Windows ARM64 hardware is supported by building the **x64** target, not native ARM64. Limit Theory depends on LuaJIT's JIT; LuaJIT does not provide a working JIT backend for native Windows ARM64. CMake rejects `-A ARM64` / `-A ARM64EC` at configure time.
+Windows ARM64 hardware supports two build modes. **ARM64EC** is recommended: the engine (`lt`, `libphx`, dependencies) compiles to native ARM64EC while LuaJIT is built as x64 for JIT interop.
+
+```bash
+cmake -S . -B build -A ARM64EC
+cmake --build build --config RelWithDebInfo
+```
+
+A full **x64** build is also supported (entire process runs under x64 emulation; slower but simplest):
 
 ```bash
 cmake -S . -B build -A x64
 cmake --build build --config RelWithDebInfo
 ```
 
-Run `bin/lt64.exe` as usual; Windows executes the x64 binary under x64 emulation with JIT enabled.
+Native **ARM64** (`-A ARM64`) is rejected at configure time: LuaJIT JIT is required but unavailable for native Windows ARM64.
+
+After switching between x64 and ARM64EC, do a clean rebuild (`rm -rf build bin`) so stale `lua51.dll` / object files from the previous architecture are not reused.
 
 ### CMake Structure
 
@@ -115,7 +124,8 @@ Compiler flags:
 
 | Platform | Notable flags |
 |----------|---------------|
-| Windows | `/MD`, `/MP`, `/EHs-c-`, `/GR-`, `/GL`, `/fp:fast`, `/arch:SSE2` |
+| Windows x64 | `/MD`, `/MP`, `/EHs-c-`, `/GR-`, `/GL`, `/fp:fast`, `/arch:SSE2` |
+| Windows ARM64 / ARM64EC | Same as x64 except `/arch:SSE2` omitted; minimp3 uses `MINIMP3_NO_SIMD` |
 | Linux | `-Wall`, `-fno-exceptions`, `-ffast-math`, `-fpic`, `-O3`, SSE2–SSE4, `-std=c++11` |
 
 ---
@@ -187,7 +197,7 @@ Windows x64 builds pull and compile dependencies automatically (`libphx/cmake/De
 | **FreeType** | `VER-2-13-3` | Font rasterization (static link) |
 | **LZ4** | `v1.10.0` | Compression (static link) |
 | **Bullet** | `3.25` | Physics (static link; headers from fetched `src/`) |
-| **LuaJIT** | `v2.1.0-beta3` | Lua runtime (`lua51.dll`; MSVC build script) |
+| **LuaJIT** | `v2.1.0-beta3` | Lua runtime (`lua51.dll`; MSVC build script). Built as **x64** when the CMake target is ARM64EC (JIT interop). |
 | **minimp3** | commit `7b590fd` | MP3 decode (header-only) |
 | **LuaFileSystem** | `v1_8_0` | Native `lfs.dll` for script I/O |
 | **OpenGL** | 2.1 compat | Requested via `Engine_Init(2, 1)` |
@@ -219,7 +229,9 @@ Linux CMake paths exist but are less tested than Windows. SDL3 + static deps are
 | Platform | Status |
 |----------|--------|
 | **Windows x64** | Primary, fully wired in CMake |
-| **Windows on ARM64 (x64 build)** | Supported via `-A x64` and x64 emulation; native `-A ARM64` rejected (LuaJIT JIT) |
+| **Windows ARM64EC** | Recommended on ARM64 PCs; native engine + x64 LuaJIT JIT |
+| **Windows on ARM64 (x64 build)** | Supported via `-A x64` and full x64 emulation |
+| **Windows ARM64 (native)** | Rejected at configure (`-A ARM64`; LuaJIT JIT unavailable) |
 | **Linux** (32/64) | CMake paths exist; ext-lib import incomplete |
 | **macOS** | Explicitly unsupported |
 
@@ -251,7 +263,7 @@ Use `git clone --recursive` so the `libphx` submodule is present. First CMake co
 
 ### Native Windows ARM64 rejected
 
-`cmake -S . -B build -A ARM64` fails at configure time because LuaJIT JIT is required and unavailable on native Windows ARM64. On ARM64 Windows, use `-A x64` instead (see [Windows on ARM64](#windows-on-arm64)).
+`cmake -S . -B build -A ARM64` fails at configure time because LuaJIT JIT is required and unavailable on native Windows ARM64. On ARM64 Windows, use `-A ARM64EC` (recommended) or `-A x64` instead (see [Windows on ARM64](#windows-on-arm64)).
 
 ### Stale binaries in `bin/`
 
